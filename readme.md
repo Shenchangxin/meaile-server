@@ -12,4 +12,6 @@ go get -u github.com/gin-gonic/gin
 go get -u github.com/spf13/viper  
 #6.集成zap日志框架  
 go get -u go.uber.org/zap  
+#7.集成jwt
+go get -u github.com/dgrijalva/jwt-go
 

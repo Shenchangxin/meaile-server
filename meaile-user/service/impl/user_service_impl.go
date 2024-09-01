@@ -19,7 +19,7 @@ func (u UserServiceImpl) SaveUser(ctx gin.Context, userBo bo.MeaileUserBo) (bool
 		UserName: userBo.UserName,
 	}).First(&user)
 	if result.RowsAffected == 1 {
-		return false, Errorf(codes.AlreadyExists, "用户已存在")
+		return false, nil
 	}
 	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(userBo.Password), bcrypt.DefaultCost)
 	if err != nil {

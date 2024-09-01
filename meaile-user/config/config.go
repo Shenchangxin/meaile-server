@@ -8,8 +8,11 @@ type MysqlConfig struct {
 	DBName   string `mapstructure:"dbname" json:"dbname"`
 	Password string `mapstructure:"password" json:"password"`
 }
-
+type JWTConfig struct {
+	SigningKey string `mapstructure:"key" json:"host"`
+}
 type ServerConfig struct {
 	Name        string      `mapstructure:"name" json:"name"`
 	MysqlConfig MysqlConfig `mapstructure:"mysql" json:"mysql"`
+	JWTConfig   JWTConfig   `mapstructure:"jwt" json:"jwt"`
 }
