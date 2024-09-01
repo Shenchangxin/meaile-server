@@ -13,12 +13,13 @@ import (
 type UserServiceImpl struct {
 }
 
-func (u UserServiceImpl) SaveUser(ctx gin.Context, userBo bo.MeaileUserBo) (bool, error) {
+func (u UserServiceImpl) SaveUser(ctx *gin.Context, userBo bo.MeaileUserBo) (bool, error) {
 	var user model.MeaileUser
 	result := global.DB.Where(&model.MeaileUser{
 		UserName: userBo.UserName,
 	}).First(&user)
 	if result.RowsAffected == 1 {
+		model.Success(ctx, model.SUCCESS, nil)
 		return false, nil
 	}
 	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(userBo.Password), bcrypt.DefaultCost)
@@ -47,14 +48,14 @@ func (u UserServiceImpl) SaveUser(ctx gin.Context, userBo bo.MeaileUserBo) (bool
 	return true, nil
 }
 
-func (u UserServiceImpl) GetUserInfo(ctx gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVo {
+func (u UserServiceImpl) GetUserInfo(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVo {
 	return vo.MeaileUserVo{}
 }
 
-func (u UserServiceImpl) GetUserList(ctx gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVoList {
+func (u UserServiceImpl) GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVoList {
 	return vo.MeaileUserVoList{}
 }
 
-func (u UserServiceImpl) UpdateUser(ctx gin.Context, userBo bo.MeaileUserBo) bool {
+func (u UserServiceImpl) UpdateUser(ctx *gin.Context, userBo bo.MeaileUserBo) bool {
 	return true
 }

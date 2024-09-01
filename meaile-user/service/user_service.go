@@ -7,8 +7,8 @@ import (
 )
 
 type UserService interface {
-	GetUserInfo(ctx gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVo
-	GetUserList(ctx gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVoList
-	SaveUser(ctx gin.Context, userBo bo.MeaileUserBo) (bool, error)
-	UpdateUser(ctx gin.Context, userBo bo.MeaileUserBo) bool
+	GetUserInfo(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVo
+	GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVoList
+	SaveUser(ctx *gin.Context, userBo bo.MeaileUserBo) (bool, error)
+	UpdateUser(ctx *gin.Context, userBo bo.MeaileUserBo) bool
 }
