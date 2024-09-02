@@ -88,7 +88,7 @@ func (u UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.Re
 					StandardClaims: jwt.StandardClaims{
 						NotBefore: time.Now().Unix(),
 						ExpiresAt: time.Now().Unix() + 60*60*24*30,
-						Issuer:    "imooc",
+						Issuer:    "meaile",
 					},
 				}
 				token, err := j.CreateToken(claims)
