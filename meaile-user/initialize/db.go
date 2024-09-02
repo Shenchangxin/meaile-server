@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"log"
-	"meaile-web/meaile-user/global"
+	"meaile-server/meaile-user/global"
 	"os"
 	"time"
 )

@@ -2,9 +2,9 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"meaile-web/meaile-user/model"
-	bo "meaile-web/meaile-user/model/bo"
-	vo "meaile-web/meaile-user/model/vo"
+	"meaile-server/meaile-user/model"
+	bo "meaile-server/meaile-user/model/bo"
+	vo "meaile-server/meaile-user/model/vo"
 )
 
 type UserService interface {

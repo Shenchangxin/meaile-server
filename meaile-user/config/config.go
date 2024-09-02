@@ -13,6 +13,7 @@ type JWTConfig struct {
 }
 type ServerConfig struct {
 	Name        string      `mapstructure:"name" json:"name"`
+	Port        int32       `mapstructure:"port" json:"port"`
 	MysqlConfig MysqlConfig `mapstructure:"mysql" json:"mysql"`
 	JWTConfig   JWTConfig   `mapstructure:"jwt" json:"jwt"`
 }

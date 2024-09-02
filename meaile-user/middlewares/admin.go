@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
-	"meaile-web/meaile-user/model"
+	"meaile-server/meaile-user/model"
 	"net/http"
 )
 

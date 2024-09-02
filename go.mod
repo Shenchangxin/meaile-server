@@ -1,4 +1,4 @@
-module meaile-web
+module meaile-server
 
 go 1.21.12
 

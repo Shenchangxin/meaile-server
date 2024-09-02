@@ -2,7 +2,7 @@ package global
 
 import (
 	"gorm.io/gorm"
-	"meaile-web/meaile-user/config"
+	"meaile-server/meaile-user/config"
 )
 
 var (
