@@ -18,3 +18,8 @@ type MeaileUserBo struct {
 	UpdatedBy       string     `json:"updatedBy"`       //type:string       comment:更新人            version:2024-08-01 15:52
 	UpdatedTime     *time.Time `json:"updatedTime"`     //type:*time.Time   comment:更新时间          version:2024-08-01 15:52
 }
+
+type LoginForm struct {
+	UserName string `json:"userName"` //type:string       comment:用户名
+	Password string `json:"password"` //type:string       comment:密码
+}
