@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+type Response struct {
+	Code int
+	Msg  string
+	Data interface{}
+}
+
 const (
 	SUCCESS int = 200 //操作成功
 	FAILED  int = 500 //操作失败
