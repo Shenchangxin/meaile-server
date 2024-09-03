@@ -32,12 +32,4 @@ func main() {
 	if err != nil {
 		panic("服务启动失败")
 	}
-	if err != nil {
-		panic(err)
-	}
-
-	if err != nil {
-		panic("服务启动失败")
-	}
-
 }

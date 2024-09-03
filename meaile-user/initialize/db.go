@@ -15,7 +15,7 @@ import (
 func InitDB() {
 	//dsn := "root:123456@tcp(192.168.24.5:3307)/go_blog?charset=utf8mb4&parseTime=True&loc=Local"
 	dbConfig := global.ServerConfig.MysqlConfig
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DBName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbConfig.UserName, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DBName)
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
