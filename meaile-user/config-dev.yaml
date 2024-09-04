@@ -1,6 +1,6 @@
-server:
-  port: 8080
-  name: meaile-user
+
+port: 8080
+name: meaile-user
 
 
 mysql:

@@ -12,7 +12,7 @@ import (
 func main() {
 
 	Ip := flag.String("ip", "0.0.0.0", "ip地址")
-	Port := flag.Int("port", 8090, "端口号")
+	//Port := flag.Int("port", 8090, "端口号")
 
 	//初始化
 	initialize.InitLogger()
@@ -28,7 +28,7 @@ func main() {
 		zap.S().Panicf("启动服务器：%d 失败", global.ServerConfig.Port)
 	}
 
-	_, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *Ip, *Port))
+	_, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *Ip, global.ServerConfig.Port))
 	if err != nil {
 		panic("服务启动失败")
 	}
