@@ -4,18 +4,18 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"meaile-web/meaile-user/global"
-	"meaile-web/meaile-user/middlewares"
-	"meaile-web/meaile-user/model"
-	bo "meaile-web/meaile-user/model/bo"
-	vo "meaile-web/meaile-user/model/vo"
+	"meaile-server/meaile-user/global"
+	"meaile-server/meaile-user/middlewares"
+	"meaile-server/meaile-user/model"
+	bo "meaile-server/meaile-user/model/bo"
+	vo "meaile-server/meaile-user/model/vo"
 	"time"
 )
 
 type UserServiceImpl struct {
 }
 
-func (u UserServiceImpl) SaveUser(ctx *gin.Context, userBo bo.MeaileUserBo) (bool, error) {
+func (u *UserServiceImpl) SaveUser(ctx *gin.Context, userBo bo.MeaileUserBo) (bool, error) {
 	var user model.MeaileUser
 	result := global.DB.Where(&model.MeaileUser{
 		UserName: userBo.UserName,
@@ -50,19 +50,19 @@ func (u UserServiceImpl) SaveUser(ctx *gin.Context, userBo bo.MeaileUserBo) (boo
 	return true, nil
 }
 
-func (u UserServiceImpl) GetUserInfo(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVo {
+func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVo {
 	return vo.MeaileUserVo{}
 }
 
-func (u UserServiceImpl) GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVoList {
+func (u *UserServiceImpl) GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVoList {
 	return vo.MeaileUserVoList{}
 }
 
-func (u UserServiceImpl) UpdateUser(ctx *gin.Context, userBo bo.MeaileUserBo) bool {
+func (u *UserServiceImpl) UpdateUser(ctx *gin.Context, userBo bo.MeaileUserBo) bool {
 	return true
 }
 
-func (u UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.Response {
+func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.Response {
 	var user model.MeaileUser
 	result := global.DB.Where(&model.MeaileUser{
 		UserName: loginBo.UserName,

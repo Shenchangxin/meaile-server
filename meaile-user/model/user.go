@@ -4,7 +4,7 @@ import "time"
 
 // MeaileUser  用户信息。
 type MeaileUser struct {
-	Id              int64     `gorm:"column:primaryKey;id" json:"id"`                 //type:BIGINT       comment:                  version:2024-08-01 15:52
+	Id              int64     `gorm:"column:id" json:"id"`                            //type:BIGINT       comment:                  version:2024-08-01 15:52
 	UserName        string    `gorm:"column:user_name" json:"userName"`               //type:string       comment:用户名            version:2024-08-01 15:52
 	NickName        string    `gorm:"column:nick_name" json:"nickName"`               //type:string       comment:昵称              version:2024-08-01 15:52
 	Password        string    `gorm:"column:password" json:"password"`                //type:string       comment:密码              version:2024-08-01 15:52

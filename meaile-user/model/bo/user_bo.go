@@ -4,7 +4,7 @@ import "time"
 
 type MeaileUserBo struct {
 	Id              int64      `json:"id"`              //type:BIGINT       comment:                  version:2024-08-01 15:52
-	UserName        string     `json:"userName"`        //type:string       comment:用户名            version:2024-08-01 15:52
+	UserName        string     `json:"username"`        //type:string       comment:用户名            version:2024-08-01 15:52
 	NickName        string     `json:"nickName"`        //type:string       comment:昵称              version:2024-08-01 15:52
 	Password        string     `json:"password"`        //type:string       comment:密码              version:2024-08-01 15:52
 	Status          string     `json:"status"`          //type:string       comment:状态              version:2024-08-01 15:52
@@ -20,6 +20,6 @@ type MeaileUserBo struct {
 }
 
 type LoginForm struct {
-	UserName string `json:"userName"` //type:string       comment:用户名
+	UserName string `json:"username"` //type:string       comment:用户名
 	Password string `json:"password"` //type:string       comment:密码
 }
