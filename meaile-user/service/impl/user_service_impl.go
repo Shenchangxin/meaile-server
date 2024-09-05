@@ -132,6 +132,55 @@ func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.R
 	}
 }
 
+func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUserBo) *model.Response {
+	var user model.MeaileUser
+	result := global.DB.Where(&model.MeaileUser{
+		UserName: registerUserBo.UserName,
+	}).First(&user)
+
+	if result.RowsAffected == 1 {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "用户名重复",
+			Data: nil,
+		}
+	} else {
+		user.Sex = registerUserBo.Sex
+		user.UserName = registerUserBo.UserName
+		user.NickName = registerUserBo.NickName
+		user.Status = "0"
+		user.Avatar = registerUserBo.Avatar
+		user.BackgroundImage = registerUserBo.BackgroundImage
+		user.Hobby = registerUserBo.Hobby
+		user.Profile = registerUserBo.Profile
+		user.CreatedBy = user.UserName
+		user.CreatedTime = time.Now()
+		//salt, _ := bcrypt.GenerateFromPassword([]byte("shenchangxin"), bcrypt.DefaultCost)
+		encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(registerUserBo.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return &model.Response{
+				Code: model.FAILED,
+				Msg:  "创建失败",
+				Data: err,
+			}
+		}
+		user.Password = string(encryptedPassword)
+		if result.Error != nil {
+			return &model.Response{
+				Code: model.FAILED,
+				Msg:  "创建失败",
+				Data: result.Error,
+			}
+		}
+		result = global.DB.Create(&user)
+		return &model.Response{
+			Code: model.SUCCESS,
+			Msg:  "注册成功",
+			Data: user,
+		}
+	}
+}
+
 func CheckPassword(passwordDB string, passwordLogin string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(passwordDB), []byte(passwordLogin))
 	if err != nil {
