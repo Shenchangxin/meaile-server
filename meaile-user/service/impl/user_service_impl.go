@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"meaile-server/meaile-user/global"
 	"meaile-server/meaile-user/middlewares"
+	_ "meaile-server/meaile-user/middlewares"
 	"meaile-server/meaile-user/model"
 	bo "meaile-server/meaile-user/model/bo"
 	vo "meaile-server/meaile-user/model/vo"
@@ -48,10 +49,6 @@ func (u *UserServiceImpl) SaveUser(ctx *gin.Context, userBo bo.MeaileUserBo) (bo
 		return false, result.Error
 	}
 	return true, nil
-}
-
-func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVo {
-	return vo.MeaileUserVo{}
 }
 
 func (u *UserServiceImpl) GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) vo.MeaileUserVoList {
@@ -137,7 +134,6 @@ func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUse
 	result := global.DB.Where(&model.MeaileUser{
 		UserName: registerUserBo.UserName,
 	}).First(&user)
-
 	if result.RowsAffected == 1 {
 		return &model.Response{
 			Code: model.FAILED,
@@ -154,6 +150,8 @@ func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUse
 		user.Hobby = registerUserBo.Hobby
 		user.Profile = registerUserBo.Profile
 		user.CreatedBy = user.UserName
+		user.UpdatedTime = time.Now()
+		user.UpdatedBy = user.UserName
 		user.CreatedTime = time.Now()
 		//salt, _ := bcrypt.GenerateFromPassword([]byte("shenchangxin"), bcrypt.DefaultCost)
 		encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(registerUserBo.Password), bcrypt.DefaultCost)
@@ -165,13 +163,7 @@ func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUse
 			}
 		}
 		user.Password = string(encryptedPassword)
-		if result.Error != nil {
-			return &model.Response{
-				Code: model.FAILED,
-				Msg:  "创建失败",
-				Data: result.Error,
-			}
-		}
+
 		result = global.DB.Create(&user)
 		return &model.Response{
 			Code: model.SUCCESS,
@@ -180,12 +172,27 @@ func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUse
 		}
 	}
 }
-
+func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Response {
+	myJwt := middlewares.NewJWT()
+	customClaims, err := myJwt.ParseToken(token)
+	if err != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: err,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "获取用户信息成功",
+		Data: customClaims,
+	}
+}
 func CheckPassword(passwordDB string, passwordLogin string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(passwordDB), []byte(passwordLogin))
 	if err != nil {
 		return false, err
 	} else {
-		return false, nil
+		return true, nil
 	}
 }

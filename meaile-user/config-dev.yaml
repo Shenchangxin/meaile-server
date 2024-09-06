@@ -11,7 +11,7 @@ mysql:
   password: 123456
 
 jwt:
-  key: 'shenchangxin'
+  key: 'shenchangxingogogo'
 
 redis:
   username:
