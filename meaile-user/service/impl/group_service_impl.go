@@ -55,5 +55,28 @@ func (u *GroupServiceImpl) SaveGroup(ctx *gin.Context, groupBo bo.MeaileFriendGr
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "保存分组信息成功",
+		Data: group,
+	}
+}
+func (u *GroupServiceImpl) DeleteGroup(ctx *gin.Context, groupIds bo.DeleteIds) *model.Response {
+	if groupIds.GroupIds == nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "参数错误",
+			Data: nil,
+		}
+	}
+	result := global.DB.Where("id in (?)", groupIds.GroupIds).Delete(&model.MeaileFriendGroup{})
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "删除失败",
+			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "删除成功",
+		Data: nil,
 	}
 }

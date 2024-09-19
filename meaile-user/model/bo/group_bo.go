@@ -13,5 +13,5 @@ type MeaileFriendGroupBo struct {
 }
 
 type DeleteIds struct {
-	groupIds []int64 `json:"groupIds"`
+	GroupIds []int64 `json:"groupIds"`
 }
