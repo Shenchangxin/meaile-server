@@ -43,6 +43,43 @@ func Register(ctx *gin.Context) {
 	return
 }
 
+func UpdateUserInfo(ctx *gin.Context) {
+	registerUserBo := model.MeaileUserBo{}
+	if err := ctx.ShouldBind(&registerUserBo); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	userService := impl.UserServiceImpl{}
+	response := userService.UpdateUser(ctx, registerUserBo)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+func GetUserFriendList(ctx *gin.Context) {
+	token := ctx.Request.Header.Get("x-token")
+	if token == "" {
+		ctx.JSON(http.StatusServiceUnavailable, gin.H{
+			"code": 500,
+			"msg":  "登录已过期，请重新登录",
+			"data": nil,
+		})
+		return
+	}
+	userService := impl.UserServiceImpl{}
+	response := userService.GetUserFriendList(ctx, token)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+
 func GetUserInfo(ctx *gin.Context) {
 	token := ctx.Request.Header.Get("x-token")
 	if token == "" {
@@ -55,11 +92,11 @@ func GetUserInfo(ctx *gin.Context) {
 	}
 
 	userService := impl.UserServiceImpl{}
-	userInfo := userService.GetUserInfo(ctx, token)
+	response := userService.GetUserInfo(ctx, token)
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": 200,
-		"msg":  "获取用户信息成功",
-		"data": userInfo,
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
 	})
 	return
 

@@ -55,10 +55,78 @@ func (u *UserServiceImpl) GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) 
 	return vo.MeaileUserVoList{}
 }
 
-func (u *UserServiceImpl) UpdateUser(ctx *gin.Context, userBo bo.MeaileUserBo) bool {
-	return true
+func (u *UserServiceImpl) UpdateUser(ctx *gin.Context, registerUserBo bo.MeaileUserBo) *model.Response {
+	token := ctx.Request.Header.Get("x-token")
+	myJwt := middlewares.NewJWT()
+	customClaims, err := myJwt.ParseToken(token)
+	if err != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: err,
+		}
+	}
+	var user model.MeaileUser
+	result := global.DB.Where(&model.MeaileUser{
+		UserName: registerUserBo.UserName,
+	}).First(&user)
+	if result.RowsAffected == 1 {
+		user.Sex = registerUserBo.Sex
+		user.UserName = registerUserBo.UserName
+		user.NickName = registerUserBo.NickName
+		user.Status = "0"
+		user.Avatar = registerUserBo.Avatar
+		user.BackgroundImage = registerUserBo.BackgroundImage
+		user.Hobby = registerUserBo.Hobby
+		user.Profile = registerUserBo.Profile
+		user.CreatedBy = customClaims.UserName
+		user.UpdatedTime = time.Now()
+		result = global.DB.Save(&user)
+		if result.Error != nil {
+			return &model.Response{
+				Code: model.FAILED,
+				Msg:  "修改用户信息失败",
+				Data: result.Error,
+			}
+		}
+		return &model.Response{
+			Code: model.SUCCESS,
+			Msg:  "操作成功",
+			Data: user,
+		}
+	} else {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "未找到该用户信息",
+			Data: nil,
+		}
+	}
 }
-
+func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context, token string) *model.Response {
+	myJwt := middlewares.NewJWT()
+	customClaims, err := myJwt.ParseToken(token)
+	if err != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: err,
+		}
+	}
+	var users []model.MeaileUser
+	result := global.DB.Joins("join meaile_user_friend muf on muf.user_id_friend = meaile_user.id").Select(" meaile_user.*").Scan(&users).Where("muf.user_id_main = ", customClaims.ID)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询好友信息失败",
+			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "操作成功",
+		Data: users,
+	}
+}
 func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.Response {
 	var user model.MeaileUser
 	result := global.DB.Where(&model.MeaileUser{
@@ -80,6 +148,7 @@ func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.R
 				j := middlewares.NewJWT()
 				claims := model.CustomClaims{
 					ID:          uint(user.Id),
+					UserName:    user.UserName,
 					NickName:    user.NickName,
 					AuthorityId: 1,
 					StandardClaims: jwt.StandardClaims{
@@ -106,12 +175,6 @@ func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.R
 						"expired_at": (time.Now().Unix() + 60*60*24*30) * 1000,
 					},
 				}
-				//ctx.JSON(http.StatusOK, gin.H{
-				//	"id":         user.Id,
-				//	"nick_name":  user.NickName,
-				//	"token":      token,
-				//	"expired_at": (time.Now().Unix() + 60*60*24*30) * 1000,
-				//})
 			} else {
 				return &model.Response{
 					Code: model.FAILED,
@@ -172,6 +235,7 @@ func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUse
 		}
 	}
 }
+
 func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Response {
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
