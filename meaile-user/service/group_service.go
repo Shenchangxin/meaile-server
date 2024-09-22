@@ -11,5 +11,5 @@ type GroupService interface {
 	UpdateGroup(ctx *gin.Context, groupBo bo.MeaileFriendGroupBo) *model.Response
 	GetGroupListByUserId(ctx *gin.Context, userId int64) *model.Response
 	GetGroupById(ctx *gin.Context, groupId int64) *model.Response
-	DeleteGroup(ctx *gin.Context, groupIds bo.DeleteIds) *model.Response
+	DeleteGroup(ctx *gin.Context, groupIds bo.DeleteGroupIds) *model.Response
 }
