@@ -11,3 +11,6 @@ type MeaileFriendGroupVo struct {
 	UpdatedBy   string     `gorm:"column:UPDATED_BY" json:"updatedBy"`     //type:string       comment:更新人        version:2024-08-19 17:44
 	UpdatedTime *time.Time `gorm:"column:UPDATED_TIME" json:"updatedTime"` //type:*time.Time   comment:更新时间      version:2024-08-19 17:44
 }
+type FriendGroupListVo struct {
+	groupList []MeaileFriendGroupVo
+}

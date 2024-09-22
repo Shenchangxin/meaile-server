@@ -12,6 +12,6 @@ type MeaileFriendGroupBo struct {
 	UpdatedTime *time.Time `gorm:"column:UPDATED_TIME" json:"updatedTime"` //type:*time.Time   comment:更新时间      version:2024-08-19 17:44
 }
 
-type DeleteIds struct {
+type DeleteGroupIds struct {
 	GroupIds []int64 `json:"groupIds"`
 }
