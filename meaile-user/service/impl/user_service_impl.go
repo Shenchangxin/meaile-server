@@ -266,6 +266,52 @@ func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Res
 		Data: customClaims,
 	}
 }
+
+func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFriendBo) *model.Response {
+	token := ctx.Request.Header.Get("x-token")
+	if token == "" {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "登录过期，请重新登录",
+			Data: nil,
+		}
+	}
+	myJwt := middlewares.NewJWT()
+	customClaims, err := myJwt.ParseToken(token)
+	if err != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: err,
+		}
+	}
+	var userFriends []model.MeaileUserFriend
+	for _, userId := range addFriendBo.UserIds {
+		userFriend := model.MeaileUserFriend{
+			UserIdFriend: userId,
+			UserIdMain:   int64(customClaims.ID),
+			GroupId:      addFriendBo.GroupId,
+			CreatedBy:    customClaims.UserName,
+			CreatedTime:  time.Now(),
+			UpdatedTime:  time.Now(),
+			UpdatedBy:    customClaims.UserName,
+		}
+		userFriends = append(userFriends, userFriend)
+	}
+	result := global.DB.Create(&userFriends)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "操作失败",
+			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "操作成功",
+		Data: userFriends,
+	}
+}
 func CheckPassword(passwordDB string, passwordLogin string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(passwordDB), []byte(passwordLogin))
 	if err != nil {

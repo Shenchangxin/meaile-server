@@ -12,6 +12,7 @@ func InitUserRouter(Router *gin.RouterGroup) {
 	UserRouter.GET("getUserInfo", middlewares.JWTAuth(), controller.GetUserInfo)
 	UserRouter.PUT("updateUserInfo", middlewares.JWTAuth(), controller.UpdateUserInfo)
 	UserRouter.PUT("getFriendList", middlewares.JWTAuth(), controller.GetUserFriendList)
+	UserRouter.POST("addUserFriends", middlewares.JWTAuth(), controller.AddFriend)
 	UserRouter.POST("login", controller.Login)
 	UserRouter.POST("register", controller.Register)
 }
