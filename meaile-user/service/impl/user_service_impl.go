@@ -112,19 +112,33 @@ func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context, token string) *mod
 			Data: err,
 		}
 	}
-	var users []model.MeaileUser
-	result := global.DB.Joins("join meaile_user_friend muf on muf.user_id_friend = meaile_user.id").Select(" meaile_user.*").Scan(&users).Where("muf.user_id_main = ", customClaims.ID)
-	if result.Error != nil {
+	result := make(map[string][]model.MeaileUser)
+
+	var relations []struct {
+		GroupName string
+		Friend    model.MeaileUser
+	}
+
+	err = global.DB.Table("meaile_user_friend muf").
+		Select("mfg.group_name, mu.id as friend_id, mu.user_name,mu.nick_name").
+		Joins("join meaile_friend_group mfg on muf.group_id = mfg.id").
+		Joins("join meaile_user mu on muf.user_id_friend = mu.id").
+		Where("muf.user_id_main = ?", customClaims.ID).
+		Scan(&relations).Error
+	if err != nil {
 		return &model.Response{
 			Code: model.FAILED,
-			Msg:  "查询好友信息失败",
-			Data: result.Error,
+			Msg:  "查询失败",
+			Data: err,
 		}
+	}
+	for _, relation := range relations {
+		result[relation.GroupName] = append(result[relation.GroupName], relation.Friend)
 	}
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "操作成功",
-		Data: users,
+		Data: result,
 	}
 }
 func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.Response {
