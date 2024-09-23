@@ -14,4 +14,5 @@ go get -u github.com/spf13/viper
 go get -u go.uber.org/zap  
 #7.集成jwt
 go get -u github.com/dgrijalva/jwt-go
-
+#8. 集成工具框架
+go get github.com/jinzhu/copier
