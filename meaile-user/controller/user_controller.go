@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// Login 注册/**
 func Login(ctx *gin.Context) {
 	loginForm := model.LoginForm{}
 	if err := ctx.ShouldBind(&loginForm); err != nil {
@@ -25,6 +26,7 @@ func Login(ctx *gin.Context) {
 	return
 }
 
+// Register 注册/**
 func Register(ctx *gin.Context) {
 	registerUserBo := model.MeaileUserBo{}
 	if err := ctx.ShouldBind(&registerUserBo); err != nil {
@@ -43,6 +45,7 @@ func Register(ctx *gin.Context) {
 	return
 }
 
+// UpdateUserInfo 修改用户信息/**
 func UpdateUserInfo(ctx *gin.Context) {
 	registerUserBo := model.MeaileUserBo{}
 	if err := ctx.ShouldBind(&registerUserBo); err != nil {
@@ -60,6 +63,8 @@ func UpdateUserInfo(ctx *gin.Context) {
 	})
 	return
 }
+
+// GetUserFriendList 获取用户好友以及分组列表/**
 func GetUserFriendList(ctx *gin.Context) {
 	token := ctx.Request.Header.Get("x-token")
 	if token == "" {
@@ -80,6 +85,7 @@ func GetUserFriendList(ctx *gin.Context) {
 	return
 }
 
+// GetUserInfo 获取用户详细信息/**
 func GetUserInfo(ctx *gin.Context) {
 	token := ctx.Request.Header.Get("x-token")
 	if token == "" {
@@ -93,6 +99,26 @@ func GetUserInfo(ctx *gin.Context) {
 
 	userService := impl.UserServiceImpl{}
 	response := userService.GetUserInfo(ctx, token)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+
+}
+
+// AddFriend 获取用户详细信息/**
+func AddFriend(ctx *gin.Context) {
+	addUserFriendBo := model.AddUserFriendBo{}
+	if err := ctx.ShouldBind(&addUserFriendBo); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	userService := impl.UserServiceImpl{}
+	response := userService.AddFriend(ctx, addUserFriendBo)
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
