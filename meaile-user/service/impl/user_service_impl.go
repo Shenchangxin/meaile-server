@@ -113,24 +113,44 @@ func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context, token string) *mod
 		}
 	}
 	result := make(map[string][]model.MeaileUser)
-
+	var rawResults []struct {
+		GroupName string
+		ID        uint
+		UserName  string
+		Avatar    string
+		NickName  string
+	}
 	var relations []struct {
 		GroupName string
 		Friend    model.MeaileUser
 	}
 
 	err = global.DB.Table("meaile_user_friend muf").
-		Select("mfg.group_name, mu.id as friend_id, mu.user_name,mu.nick_name").
+		Select("mfg.group_name as GroupName, mu.id as ID,mu.avatar as Avatar, mu.user_name as UserName,mu.nick_name as NickName").
 		Joins("join meaile_friend_group mfg on muf.group_id = mfg.id").
 		Joins("join meaile_user mu on muf.user_id_friend = mu.id").
 		Where("muf.user_id_main = ?", customClaims.ID).
-		Scan(&relations).Error
+		Scan(&rawResults).Error
 	if err != nil {
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "查询失败",
 			Data: err,
 		}
+	}
+	for _, rawResult := range rawResults {
+		relations = append(relations, struct {
+			GroupName string
+			Friend    model.MeaileUser
+		}{
+			GroupName: rawResult.GroupName,
+			Friend: model.MeaileUser{
+				Id:       int64(rawResult.ID),
+				UserName: rawResult.UserName,
+				NickName: rawResult.NickName,
+				Avatar:   rawResult.Avatar,
+			},
+		})
 	}
 	for _, relation := range relations {
 		result[relation.GroupName] = append(result[relation.GroupName], relation.Friend)
@@ -298,6 +318,7 @@ func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFrie
 		}
 		userFriends = append(userFriends, userFriend)
 	}
+	_ = global.DB.Where("user_id_main = ? and user_id_friend in (?)", customClaims.ID, addFriendBo.UserIds).Delete(&model.MeaileUserFriend{})
 	result := global.DB.Create(&userFriends)
 	if result.Error != nil {
 		return &model.Response{
@@ -310,6 +331,38 @@ func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFrie
 		Code: model.SUCCESS,
 		Msg:  "操作成功",
 		Data: userFriends,
+	}
+}
+func (u *UserServiceImpl) DeleteFriend(ctx *gin.Context, userId int64) *model.Response {
+	token := ctx.Request.Header.Get("x-token")
+	if token == "" {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "登录过期，请重新登录",
+			Data: nil,
+		}
+	}
+	myJwt := middlewares.NewJWT()
+	customClaims, err := myJwt.ParseToken(token)
+	if err != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: err,
+		}
+	}
+	result := global.DB.Where("user_id_main = ? and user_id_friend = ?", customClaims.ID, userId).Delete(&model.MeaileUserFriend{})
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "删除失败",
+			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "操作成功",
+		Data: nil,
 	}
 }
 func CheckPassword(passwordDB string, passwordLogin string) (bool, error) {

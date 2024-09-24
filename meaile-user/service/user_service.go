@@ -15,4 +15,5 @@ type UserService interface {
 	Login(ctx *gin.Context, userBo bo.LoginForm) *model.Response
 	GetUserInfo(ctx *gin.Context, token string) *model.Response
 	AddFriend(ctx *gin.Context, friendBo bo.AddUserFriendBo) *model.Response
+	DeleteFriend(ctx *gin.Context, userId int64) *model.Response
 }

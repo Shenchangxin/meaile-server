@@ -5,6 +5,7 @@ import (
 	model "meaile-server/meaile-user/model/bo"
 	"meaile-server/meaile-user/service/impl"
 	"net/http"
+	"strconv"
 )
 
 // Login 注册/**
@@ -108,7 +109,7 @@ func GetUserInfo(ctx *gin.Context) {
 
 }
 
-// AddFriend 获取用户详细信息/**
+// AddFriend 添加好友/**
 func AddFriend(ctx *gin.Context) {
 	addUserFriendBo := model.AddUserFriendBo{}
 	if err := ctx.ShouldBind(&addUserFriendBo); err != nil {
@@ -119,6 +120,29 @@ func AddFriend(ctx *gin.Context) {
 	}
 	userService := impl.UserServiceImpl{}
 	response := userService.AddFriend(ctx, addUserFriendBo)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+
+}
+
+// DeleteFriend 删除好友/**
+func DeleteFriend(ctx *gin.Context) {
+	idStr := ctx.Query("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusInternalServerError,
+			"msg":  "参数错误",
+			"data": err,
+		})
+		return
+	}
+	userService := impl.UserServiceImpl{}
+	response := userService.DeleteFriend(ctx, id)
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
