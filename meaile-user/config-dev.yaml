@@ -16,3 +16,9 @@ jwt:
 redis:
   username:
   password:
+
+minio:
+  end-point: 127.0.0.1:9000
+  access-key: s0Hel7tJJhBAxlXVLQ0W
+  secret-key: 93qr8lWBPWGF0GGnoW8bRV4I7nBP7KAT59NVacdx
+  bucket-name: meaile-server

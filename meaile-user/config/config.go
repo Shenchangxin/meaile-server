@@ -11,9 +11,16 @@ type MysqlConfig struct {
 type JWTConfig struct {
 	SigningKey string `mapstructure:"key" json:"host"`
 }
+type MinioConfig struct {
+	EndPoint   string `mapstructure:"end-point" json:"end-point"`
+	AccessKey  string `mapstructure:"access-key" json:"access-key"`
+	SecretKey  string `mapstructure:"secret-key" json:"secret-key"`
+	BucketName string `mapstructure:"bucket-name" json:"bucket-name"`
+}
 type ServerConfig struct {
 	Name        string      `mapstructure:"name" json:"name"`
 	Port        int32       `mapstructure:"port" json:"port"`
 	MysqlConfig MysqlConfig `mapstructure:"mysql" json:"mysql"`
 	JWTConfig   JWTConfig   `mapstructure:"jwt" json:"jwt"`
+	MinioConfig MinioConfig `mapstructure:"minio" json:"minio"`
 }
