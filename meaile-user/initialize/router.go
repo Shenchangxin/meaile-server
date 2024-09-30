@@ -12,5 +12,6 @@ func Routers() *gin.Engine {
 	zap.S().Info("----配置用户相关URL----")
 	userRouter.InitUserRouter(ApiGroup)
 	userRouter.InitGroupRouter(ApiGroup)
+	userRouter.InitFoodRouter(ApiGroup)
 	return Router
 }
