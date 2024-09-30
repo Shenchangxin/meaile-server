@@ -39,9 +39,9 @@ func (u *UserServiceImpl) SaveUser(ctx *gin.Context, userBo bo.MeaileUserBo) (bo
 		Profile:         userBo.Profile,
 		Sex:             userBo.Sex,
 		Hobby:           userBo.Hobby,
-		CreatedBy:       "",
+		CreatedBy:       userBo.UserName,
 		CreatedTime:     time.Now(),
-		UpdatedBy:       "",
+		UpdatedBy:       userBo.UserName,
 		UpdatedTime:     time.Now(),
 	}
 	result = global.DB.Create(user)
