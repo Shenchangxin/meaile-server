@@ -18,6 +18,7 @@ func main() {
 	initialize.InitLogger()
 	initialize.InitConfig()
 	initialize.InitDB()
+	initialize.InitMinio()
 
 	flag.Parse()
 	Routers := initialize.Routers()
