@@ -19,7 +19,7 @@ func Login(ctx *gin.Context) {
 	}
 	userService := impl.UserServiceImpl{}
 	response := userService.Login(ctx, loginForm)
-	ctx.JSON(http.StatusBadRequest, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,

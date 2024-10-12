@@ -3,15 +3,19 @@ package initialize
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	userRouter "meaile-server/meaile-user/router"
+	router "meaile-server/meaile-user/router"
 )
 
 func Routers() *gin.Engine {
 	Router := gin.Default()
 	ApiGroup := Router.Group("/v1")
 	zap.S().Info("----配置用户相关URL----")
-	userRouter.InitUserRouter(ApiGroup)
-	userRouter.InitGroupRouter(ApiGroup)
-	userRouter.InitFoodRouter(ApiGroup)
+	router.InitUserRouter(ApiGroup)
+	zap.S().Info("----配置分组相关URL----")
+	router.InitGroupRouter(ApiGroup)
+	zap.S().Info("----配置菜品相关URL----")
+	router.InitFoodRouter(ApiGroup)
+	zap.S().Info("----配置OSS相关URL----")
+	router.InitOssRouter(ApiGroup)
 	return Router
 }

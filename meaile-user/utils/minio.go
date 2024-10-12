@@ -32,11 +32,11 @@ func (m *MinioClient) UploadFile(bucketName, objectName string, file *multipart.
 func (m *MinioClient) DownloadFile(bucketName, objectName, fileName string) (*minio.Object, error) {
 
 	// 下载存储桶中的文件到本地
-	obj, err := m.Client.GetObject(context.Background(), bucketName, fileName, minio.GetObjectOptions{})
+	obj, err := m.Client.GetObject(context.Background(), bucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, err
 	}
-	zap.S().Info("下载文件成功：", objectName)
+	zap.S().Info("下载文件成功：", fileName)
 	return obj, nil
 
 }

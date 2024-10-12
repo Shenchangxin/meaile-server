@@ -9,11 +9,11 @@ import (
 func InitUserRouter(Router *gin.RouterGroup) {
 	UserRouter := Router.Group("user")
 	//UserRouter.GET("list", middlewares.JWTAuth(), middlewares.IsAdminAuth(), api.GetUserList)
-	UserRouter.GET("getUserInfo", middlewares.JWTAuth(), controller.GetUserInfo)
-	UserRouter.PUT("updateUserInfo", middlewares.JWTAuth(), controller.UpdateUserInfo)
-	UserRouter.GET("getFriendList", middlewares.JWTAuth(), controller.GetUserFriendList)
-	UserRouter.POST("addUserFriends", middlewares.JWTAuth(), controller.AddFriend)
-	UserRouter.GET("deleteFriend", middlewares.JWTAuth(), controller.DeleteFriend)
-	UserRouter.POST("login", controller.Login)
-	UserRouter.POST("register", controller.Register)
+	UserRouter.GET("getUserInfo", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetUserInfo)
+	UserRouter.PUT("updateUserInfo", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.UpdateUserInfo)
+	UserRouter.GET("getFriendList", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetUserFriendList)
+	UserRouter.POST("addUserFriends", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.AddFriend)
+	UserRouter.GET("deleteFriend", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DeleteFriend)
+	UserRouter.POST("login", middlewares.LogMiddleware(), controller.Login)
+	UserRouter.POST("register", middlewares.LogMiddleware(), controller.Register)
 }
