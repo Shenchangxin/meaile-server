@@ -8,9 +8,9 @@ import (
 
 func InitGroupRouter(Router *gin.RouterGroup) {
 	GroupRouter := Router.Group("group")
-	GroupRouter.POST("saveGroup", middlewares.JWTAuth(), controller.SaveGroup)
-	GroupRouter.POST("updateGroup", middlewares.JWTAuth(), controller.UpdateGroup)
-	GroupRouter.GET("deleteGroup", middlewares.JWTAuth(), controller.DeleteGroup)
-	GroupRouter.GET("getGroupList", middlewares.JWTAuth(), controller.GroupList)
-	GroupRouter.GET("getGroupInfo/:id", middlewares.JWTAuth(), controller.GroupInfo)
+	GroupRouter.POST("saveGroup", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.SaveGroup)
+	GroupRouter.POST("updateGroup", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.UpdateGroup)
+	GroupRouter.GET("deleteGroup", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DeleteGroup)
+	GroupRouter.GET("getGroupList", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GroupList)
+	GroupRouter.GET("getGroupInfo/:id", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GroupInfo)
 }
