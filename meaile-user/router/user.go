@@ -14,6 +14,6 @@ func InitUserRouter(Router *gin.RouterGroup) {
 	UserRouter.GET("getFriendList", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetUserFriendList)
 	UserRouter.POST("addUserFriends", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.AddFriend)
 	UserRouter.GET("deleteFriend", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DeleteFriend)
-	UserRouter.POST("login", middlewares.LogMiddleware(), controller.Login)
-	UserRouter.POST("register", middlewares.LogMiddleware(), controller.Register)
+	UserRouter.POST("login", controller.Login)
+	UserRouter.POST("register", controller.Register)
 }

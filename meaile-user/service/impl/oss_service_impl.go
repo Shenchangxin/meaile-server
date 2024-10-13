@@ -1,9 +1,11 @@
 package impl
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"io"
 	"meaile-server/meaile-user/global"
 	"meaile-server/meaile-user/middlewares"
@@ -30,7 +32,14 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 			Data: err,
 		}
 	}
-
+	parts := strings.Split(fileHeader.Filename, ".")
+	if len(parts) <= 1 {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "文件名称不正确",
+			Data: nil,
+		}
+	}
 	for {
 		u = uuid.New()
 		uuidStr = u.String()
@@ -38,17 +47,20 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 			OssId: uuidStr,
 		}).First(&ossInfo)
 		if res.Error != nil {
-			return &model.Response{
-				Code: model.FAILED,
-				Msg:  "文件上传失败",
-				Data: res.Error,
+			if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
+				return &model.Response{
+					Code: model.FAILED,
+					Msg:  "文件上传失败",
+					Data: res.Error,
+				}
 			}
 		}
 		if res.RowsAffected == 0 {
 			break
 		}
 	}
-	err = global.MinioClient.UploadFile(global.ServerConfig.MinioConfig.BucketName, uuidStr, fileHeader)
+	objectName := uuidStr + "." + parts[len(parts)-1]
+	err = global.MinioClient.UploadFile(global.ServerConfig.MinioConfig.BucketName, objectName, fileHeader)
 	if err != nil {
 		return &model.Response{
 			Code: model.FAILED,
@@ -63,21 +75,11 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 	//}
 	//url, err := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, uuidStr, exp)
 	// 保存oss信息
-	parts := strings.Split(fileHeader.Filename, ".")
-	// 去掉切片中的最后一个元素
-	if len(parts) > 1 {
-		parts = parts[:len(parts)-1]
-	} else {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "文件名称不正确",
-			Data: nil,
-		}
-	}
+
 	ossInfo = model.MeaileOss{
 		OssId:       uuidStr,
 		FileName:    fileHeader.Filename,
-		Suffix:      parts[0],
+		Suffix:      "." + parts[len(parts)-1],
 		CreatedTime: time.Now(),
 		CreatedBy:   customClaims.UserName,
 		UpdatedTime: time.Now(),
@@ -97,7 +99,7 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 		Data: ossInfo,
 	}
 }
-func (o *OssServiceImpl) Download(ctx *gin.Context, id int64) *model.Response {
+func (o *OssServiceImpl) Download(ctx *gin.Context, id int64) (res *model.Response, fileName string) {
 	var ossInfo model.MeaileOss
 	result := global.DB.Where(&model.MeaileOss{
 		Id: id,
@@ -108,22 +110,22 @@ func (o *OssServiceImpl) Download(ctx *gin.Context, id int64) *model.Response {
 			Code: model.FAILED,
 			Msg:  "下载失败",
 			Data: result.Error,
-		}
+		}, ""
 	}
 	if result.RowsAffected != 1 {
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "未找到该文件信息",
 			Data: nil,
-		}
+		}, ""
 	}
-	object, err := global.MinioClient.DownloadFile(global.ServerConfig.MinioConfig.BucketName, ossInfo.OssId, ossInfo.FileName)
+	object, err := global.MinioClient.DownloadFile(global.ServerConfig.MinioConfig.BucketName, ossInfo.OssId+ossInfo.Suffix, ossInfo.FileName)
 	if err != nil {
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "下载失败",
 			Data: result.Error,
-		}
+		}, ""
 	}
 	defer object.Close()
 
@@ -134,13 +136,13 @@ func (o *OssServiceImpl) Download(ctx *gin.Context, id int64) *model.Response {
 			Code: model.FAILED,
 			Msg:  "下载失败",
 			Data: result.Error,
-		}
+		}, ""
 	}
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "下载成功",
 		Data: data,
-	}
+	}, ossInfo.FileName
 }
 func (o *OssServiceImpl) GetUrl(ctx *gin.Context, id int64) *model.Response {
 	var ossInfo model.MeaileOss
@@ -172,7 +174,7 @@ func (o *OssServiceImpl) GetUrl(ctx *gin.Context, id int64) *model.Response {
 			Data: err,
 		}
 	}
-	res, err := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, ossInfo.OssId, exp)
+	res, err := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, ossInfo.OssId+ossInfo.Suffix, exp)
 	if err != nil {
 		return &model.Response{
 			Code: model.FAILED,

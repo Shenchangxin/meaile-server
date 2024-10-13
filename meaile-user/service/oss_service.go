@@ -8,6 +8,6 @@ import (
 
 type OssService interface {
 	Upload(ctx *gin.Context, fileHeader *multipart.FileHeader) *model.Response
-	Download(ctx *gin.Context, id int64) *model.Response
+	Download(ctx *gin.Context, id int64) (res *model.Response, fileName string)
 	GetUrl(ctx *gin.Context, id int64) *model.Response
 }
