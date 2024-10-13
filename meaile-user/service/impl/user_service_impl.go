@@ -3,6 +3,7 @@ package impl
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"meaile-server/meaile-user/global"
 	"meaile-server/meaile-user/middlewares"
@@ -197,6 +198,16 @@ func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.R
 						Code: model.FAILED,
 						Msg:  "登录失败",
 						Data: err,
+					}
+				}
+				// 将日志写入数据库
+				tx := global.DB.Exec("INSERT INTO meaile_login_log (id,login_time, login_ip, login_user) VALUES ( ?,?, ?,?)", nil, time.Now(), ctx.ClientIP(), user.UserName)
+				if tx.Error != nil {
+					zap.S().Errorw("无法插入登录日志: %v\n", tx.Error)
+					return &model.Response{
+						Code: model.FAILED,
+						Msg:  "无法插入登录日志",
+						Data: tx.Error,
 					}
 				}
 				return &model.Response{

@@ -9,6 +9,6 @@ import (
 func InitOssRouter(Router *gin.RouterGroup) {
 	OssRouter := Router.Group("oss")
 	OssRouter.POST("upload", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.Upload)
-	OssRouter.POST("download", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DownLoad)
+	OssRouter.POST("download/:id", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DownLoad)
 	OssRouter.GET("getUrl/:id", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetUrl)
 }

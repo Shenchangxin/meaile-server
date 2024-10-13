@@ -3,7 +3,7 @@ package model
 import "time"
 
 type MeaileOss struct {
-	Id          int64     `gorm:"column:primaryKey;id" json:"id"`         //type:BIGINT       comment:主键id        version:2024-9-09 22:30
+	Id          int64     `gorm:"column:id" json:"id"`                    //type:BIGINT       comment:主键id        version:2024-9-09 22:30
 	OssId       string    `gorm:"column:oss_id" json:"ossId"`             //type:string       comment:桶存储名称    version:2024-9-09 22:30
 	FileName    string    `gorm:"column:file_name" json:"fileName"`       //type:string       comment:文件名称      version:2024-9-09 22:30
 	Suffix      string    `gorm:"column:suffix" json:"suffix"`            //type:string       comment:文件后缀      version:2024-9-09 22:30
