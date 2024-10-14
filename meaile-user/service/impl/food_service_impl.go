@@ -1,7 +1,9 @@
 package impl
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"meaile-server/meaile-user/global"
 	"meaile-server/meaile-user/middlewares"
 	"meaile-server/meaile-user/model"
@@ -195,5 +197,63 @@ func (f *FoodServiceImpl) UpdateFood(ctx *gin.Context, bo bo.MeaileFoodBo) *mode
 		Code: http.StatusOK,
 		Msg:  "保存成功",
 		Data: bo,
+	}
+}
+func (f *FoodServiceImpl) GetMyFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
+	token := ctx.Request.Header.Get("x-token")
+	myJwt := middlewares.NewJWT()
+	customClaims, err := myJwt.ParseToken(token)
+	if err != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: err,
+		}
+	}
+	var foods []model.MeaileFood
+	offset := (query.PageQuery.PageNum - 1) * query.PageQuery.PageSize
+	db := global.DB.Offset(offset).Limit(query.PageQuery.PageSize)
+	db.Where("created_by = ?", customClaims.UserName)
+	if query.FoodName != "" {
+		db.Where("food_name like %?%", query.FoodName)
+	}
+	if query.TagId != "" {
+		db.Joins("inner join meaile_food_tag mft on mft.tag_id = ?", query.TagId)
+	}
+	result := db.Order("favorite DESC").Find(&foods)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: http.StatusOK,
+		Msg:  "查询成功",
+		Data: foods,
+	}
+}
+func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Response {
+	var foodInfo model.MeaileFood
+	result := global.DB.Where("id = ?", id).First(&foodInfo)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	if result.RowsAffected == 0 {
+		return &model.Response{
+			Code: model.SUCCESS,
+			Msg:  "未找到该菜品信息",
+			Data: nil,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "查询成功",
+		Data: foodInfo,
 	}
 }
