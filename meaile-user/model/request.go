@@ -9,3 +9,8 @@ type CustomClaims struct {
 	AuthorityId uint
 	jwt.StandardClaims
 }
+
+type PageQuery struct {
+	PageSize int `json:"pageSize"`
+	PageNum  int `json:"pageNum"`
+}
