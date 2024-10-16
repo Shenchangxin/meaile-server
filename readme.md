@@ -12,9 +12,11 @@ go get -u github.com/gin-gonic/gin
 go get -u github.com/spf13/viper  
 #6.集成zap日志框架  
 go get -u go.uber.org/zap  
-#7.集成jwt
+#7.集成jwt  
 go get -u github.com/dgrijalva/jwt-go  
-#8. 集成工具框架
+#8. 集成工具框架  
 go get github.com/jinzhu/copier  
-#集成minio
-go get github.com/minio/minio-go/v7
+#集成minio  
+go get github.com/minio/minio-go/v7  
+#集成工具包  
+go get golang.org/x/exp/slices  

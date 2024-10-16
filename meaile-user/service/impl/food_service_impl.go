@@ -9,7 +9,9 @@ import (
 	"meaile-server/meaile-user/model"
 	model2 "meaile-server/meaile-user/model"
 	bo "meaile-server/meaile-user/model/bo"
+	vo "meaile-server/meaile-user/model/vo"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -226,6 +228,51 @@ func (f *FoodServiceImpl) GetMyFoodList(ctx *gin.Context, query bo.FoodQuery) *m
 			Code: model.FAILED,
 			Msg:  "查询失败",
 			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: http.StatusOK,
+		Msg:  "查询成功",
+		Data: foods,
+	}
+}
+func (f *FoodServiceImpl) GetFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
+	var foods []vo.MeaileFoodVo
+	offset := (query.PageQuery.PageNum - 1) * query.PageQuery.PageSize
+	db := global.DB.Offset(offset).Limit(query.PageQuery.PageSize)
+	if query.FoodName != "" {
+		db.Where("food_name like %?%", query.FoodName)
+	}
+	if query.TagId != "" {
+		db.Joins("inner join meaile_food_tag mft on mft.tag_id = ?", query.TagId)
+	}
+	result := db.Order("favorite DESC").Find(&foods)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var creators []string
+	for _, food := range foods {
+		creators = append(creators, food.CreatedBy)
+	}
+	creatorsStr := strings.Join(creators, ", ")
+	var users []model.MeaileUser
+	result = global.DB.Where("user_name in (?)", creatorsStr).Find(&users)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for _, food := range foods {
+		for _, user := range users {
+			if user.UserName == food.CreatedBy {
+				food.Creator = user
+			}
 		}
 	}
 	return &model.Response{
