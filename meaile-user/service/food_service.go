@@ -11,5 +11,6 @@ type FoodService interface {
 	DeleteFood(ctx *gin.Context, ids []int64) *model.Response
 	UpdateFood(ctx *gin.Context, bo bo.MeaileFoodBo) *model.Response
 	GetMyFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response
+	GetFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response
 	GetFoodInfo(ctx *gin.Context, id int64) *model.Response
 }

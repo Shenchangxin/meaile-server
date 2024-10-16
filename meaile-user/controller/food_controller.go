@@ -82,6 +82,23 @@ func GetMyFoods(ctx *gin.Context) {
 	})
 	return
 }
+func GetFoods(ctx *gin.Context) {
+	foodBo := model.FoodQuery{}
+	if err := ctx.ShouldBind(&foodBo); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	foodService := impl.FoodServiceImpl{}
+	response := foodService.GetFoodList(ctx, foodBo)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
 func GetFoodInfo(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	idInt, err := strconv.ParseInt(idStr, 10, 64)
