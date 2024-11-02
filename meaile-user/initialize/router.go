@@ -8,7 +8,7 @@ import (
 
 func Routers() *gin.Engine {
 	Router := gin.Default()
-	ApiGroup := Router.Group("/v1")
+	ApiGroup := Router.Group("/api/v1")
 	zap.S().Info("----配置用户相关URL----")
 	router.InitUserRouter(ApiGroup)
 	zap.S().Info("----配置分组相关URL----")
