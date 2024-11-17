@@ -17,5 +17,7 @@ func Routers() *gin.Engine {
 	router.InitFoodRouter(ApiGroup)
 	zap.S().Info("----配置OSS相关URL----")
 	router.InitOssRouter(ApiGroup)
+	zap.S().Info("----配置Tag相关URL----")
+	router.InitTagRouter(ApiGroup)
 	return Router
 }
