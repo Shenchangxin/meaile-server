@@ -110,7 +110,7 @@ func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context, token string) *mod
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
+			Data: err.Error(),
 		}
 	}
 	result := make(map[string][]model.MeaileUser)
@@ -136,7 +136,7 @@ func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context, token string) *mod
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "查询失败",
-			Data: err,
+			Data: err.Error(),
 		}
 	}
 	for _, rawResult := range rawResults {
@@ -175,7 +175,7 @@ func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.R
 			return &model.Response{
 				Code: model.FAILED,
 				Msg:  "登录失败",
-				Data: err,
+				Data: err.Error(),
 			}
 		} else {
 			if pass {
@@ -197,7 +197,7 @@ func (u *UserServiceImpl) Login(ctx *gin.Context, loginBo bo.LoginForm) *model.R
 					return &model.Response{
 						Code: model.FAILED,
 						Msg:  "登录失败",
-						Data: err,
+						Data: err.Error(),
 					}
 				}
 				// 将日志写入数据库
@@ -267,7 +267,7 @@ func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUse
 			return &model.Response{
 				Code: model.FAILED,
 				Msg:  "创建失败",
-				Data: err,
+				Data: err.Error(),
 			}
 		}
 		user.Password = string(encryptedPassword)
@@ -288,7 +288,7 @@ func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Res
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
+			Data: err.Error(),
 		}
 	}
 	return &model.Response{
@@ -313,7 +313,7 @@ func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFrie
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
+			Data: err.Error(),
 		}
 	}
 	var userFriends []model.MeaileUserFriend
@@ -359,7 +359,7 @@ func (u *UserServiceImpl) DeleteFriend(ctx *gin.Context, userId int64) *model.Re
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
+			Data: err.Error(),
 		}
 	}
 	result := global.DB.Where("user_id_main = ? and user_id_friend = ?", customClaims.ID, userId).Delete(&model.MeaileUserFriend{})
