@@ -19,5 +19,7 @@ func Routers() *gin.Engine {
 	router.InitOssRouter(ApiGroup)
 	zap.S().Info("----配置Tag相关URL----")
 	router.InitTagRouter(ApiGroup)
+	zap.S().Info("----配置Book相关URL----")
+	router.InitBookRouter(ApiGroup)
 	return Router
 }
