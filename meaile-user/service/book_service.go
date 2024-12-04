@@ -8,4 +8,5 @@ import (
 
 type BookService interface {
 	SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.Response
+	GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo) *model.Response
 }
