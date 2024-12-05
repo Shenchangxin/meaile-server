@@ -6,6 +6,7 @@ import (
 	"meaile-server/meaile-user/middlewares"
 	"meaile-server/meaile-user/model"
 	bo "meaile-server/meaile-user/model/bo"
+	vo "meaile-server/meaile-user/model/vo"
 	"time"
 )
 
@@ -47,5 +48,28 @@ func (b *BookServiceImpl) SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.
 		Code: model.SUCCESS,
 		Msg:  "创建成功",
 		Data: book,
+	}
+}
+
+func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo) *model.Response {
+	var bookList []vo.MeaileBookVo
+	result := global.DB.Table("meaile_book mb").
+		Select("mb.*,mt.* as tagList").
+		Joins("left join meaile_book_tag mbt on mbt.book_id = mb.id").
+		Joins("left join meaile_book_tag mbt2 on mbt2.book_id = mb.id").
+		Joins("left join meaile_tag mt on mt.id = mbt2.tag_id").
+		Where("mbt.tag_id = ?", bo.TagId).
+		Scan(&bookList)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "查询成功",
+		Data: bookList,
 	}
 }
