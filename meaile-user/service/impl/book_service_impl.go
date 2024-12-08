@@ -54,11 +54,11 @@ func (b *BookServiceImpl) SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.
 func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo) *model.Response {
 	var bookList []vo.MeaileBookVo
 	result := global.DB.Table("meaile_book mb").
-		Select("mb.*,mt.* as tagList").
+		Select("mb.*,mt.*").
 		Joins("left join meaile_book_tag mbt on mbt.book_id = mb.id").
 		Joins("left join meaile_book_tag mbt2 on mbt2.book_id = mb.id").
 		Joins("left join meaile_tag mt on mt.id = mbt2.tag_id").
-		Where("mbt.tag_id = ?", bo.TagId).
+		Where("mbt.tag_id = ?", bo.TagId).Order("mb." + bo.SortField + " " + bo.AscOrDesc).
 		Scan(&bookList)
 	if result.Error != nil {
 		return &model.Response{
