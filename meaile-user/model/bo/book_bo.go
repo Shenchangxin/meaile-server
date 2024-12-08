@@ -17,5 +17,7 @@ type MeaileBookBo struct {
 }
 
 type BookQueryBo struct {
-	TagId int64 `json:"tagId"`
+	TagId     int64  `json:"tagId"`
+	SortField string `json:"sortField"`
+	AscOrDesc string `json:"ascOrDesc"`
 }
