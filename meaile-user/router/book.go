@@ -8,6 +8,9 @@ import (
 
 func InitBookRouter(Router *gin.RouterGroup) {
 	BookRouter := Router.Group("book")
-	BookRouter.POST("saveFood", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.SaveBook)
+	BookRouter.POST("saveBook", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.SaveBook)
+	BookRouter.PUT("updateBook", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.UpdateBook)
+	BookRouter.DELETE("deleteBook/:id", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DeleteBook)
+	BookRouter.GET("getBookInfo/:id", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetBookInfo)
 	BookRouter.GET("getBookListByTagId", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetBookListByTag)
 }

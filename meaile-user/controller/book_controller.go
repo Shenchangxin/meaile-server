@@ -26,6 +26,24 @@ func SaveBook(ctx *gin.Context) {
 	return
 }
 
+func UpdateBook(ctx *gin.Context) {
+	bookBo := model.MeaileBookBo{}
+	if err := ctx.ShouldBind(&bookBo); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	bookService := impl.BookServiceImpl{}
+	response := bookService.UpdateBook(ctx, bookBo)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+
 func GetBookListByTag(ctx *gin.Context) {
 	bookBo := model.BookQueryBo{}
 	tagIdStr := ctx.Query("tagId")
@@ -43,6 +61,44 @@ func GetBookListByTag(ctx *gin.Context) {
 	bookBo.AscOrDesc = ascOrDesc
 	bookService := impl.BookServiceImpl{}
 	response := bookService.GetBookListByTagId(ctx, bookBo)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+
+func DeleteBook(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	bookService := impl.BookServiceImpl{}
+	response := bookService.DeleteBook(ctx, id)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+
+func GetBookInfo(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	bookService := impl.BookServiceImpl{}
+	response := bookService.GetBookInfo(ctx, id)
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
