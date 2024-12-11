@@ -18,6 +18,7 @@ func main() {
 	initialize.InitLogger()
 	initialize.InitConfig()
 	initialize.InitDB()
+	initialize.InitRedis()
 	initialize.InitMinio()
 
 	flag.Parse()

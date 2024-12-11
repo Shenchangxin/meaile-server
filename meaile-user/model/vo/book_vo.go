@@ -6,7 +6,7 @@ import (
 )
 
 type MeaileBookVo struct {
-	Id           int64             `gorm:"column:id" json:"Id"`                     //type:BIGINT       comment:主键        version:2024-11-03 22:16
+	Id           int64             `gorm:"column:id;primaryKey" json:"Id"`          //type:BIGINT       comment:主键        version:2024-11-03 22:16
 	BookName     string            `gorm:"column:book_name" json:"bookName"`        //type:string       comment:菜谱名称    version:2024-11-03 22:16
 	Image        string            `gorm:"column:image" json:"image"`               //type:string       comment:封面照片    version:2024-11-03 22:16
 	Introduction string            `gorm:"column:introduction" json:"introduction"` //type:string       comment:菜谱介绍    version:2024-11-03 22:16
@@ -18,4 +18,8 @@ type MeaileBookVo struct {
 	UpdatedBy    string            `gorm:"column:UPDATED_BY" json:"updatedBy"`      //type:string       comment:更新人      version:2024-11-03 22:16
 	UpdatedTime  time.Time         `gorm:"column:UPDATED_TIME" json:"updatedTime"`  //type:*time.Time   comment:更新时间    version:2024-11-03 22:16
 	TagList      []model.MeaileTag `gorm:"many2many:meaile_book_tag"`
+}
+
+func (MeaileBookVo) TableName() string {
+	return "meaile_book"
 }
