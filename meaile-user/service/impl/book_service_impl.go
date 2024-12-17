@@ -116,7 +116,7 @@ func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo
 		imageOssIds = append(imageOssIds, book.Image)
 	}
 	var ossList []model.MeaileOss
-	result = global.DB.Where("id in (?)", imageOssIds).Find(&ossList)
+	result = global.DB.Where("oss_id in (?)", imageOssIds).Find(&ossList)
 	//result = global.DB.Table("meaile_book mb").
 	//	Select("mb.*,mt.*").
 	//	Joins("left join meaile_book_tag mbt on mbt.book_id = mb.id").
