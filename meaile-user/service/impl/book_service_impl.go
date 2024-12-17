@@ -104,6 +104,19 @@ func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo
 		}
 	}
 	result = global.DB.Preload("TagList").Where("id in (?)", bookIds).Find(&bookList)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var imageOssIds []string
+	for _, book := range bookList {
+		imageOssIds = append(imageOssIds, book.Image)
+	}
+	var ossList []model.MeaileOss
+	result = global.DB.Where("id in (?)", imageOssIds).Find(&ossList)
 	//result = global.DB.Table("meaile_book mb").
 	//	Select("mb.*,mt.*").
 	//	Joins("left join meaile_book_tag mbt on mbt.book_id = mb.id").
@@ -116,6 +129,14 @@ func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo
 			Code: model.FAILED,
 			Msg:  "查询失败",
 			Data: result.Error,
+		}
+	}
+	for _, bookVo := range bookList {
+		for _, oss := range ossList {
+			if oss.OssId == bookVo.Image {
+				bookVo.ImageOssObj = oss
+				break
+			}
 		}
 	}
 	return &model.Response{

@@ -14,18 +14,18 @@ type MinioClient struct {
 }
 
 // UploadFile 上传文件
-func (m *MinioClient) UploadFile(bucketName, objectName string, file *multipart.FileHeader) error {
+func (m *MinioClient) UploadFile(bucketName, objectName string, file *multipart.FileHeader) (string, error) {
 	src, err := file.Open()
 	if err != nil {
-		return fmt.Errorf("上传文件失败: %w", err)
+		return "", fmt.Errorf("上传文件失败: %w", err)
 	}
 	// 上传文件到存储桶
-	_, err = m.Client.PutObject(context.Background(), bucketName, objectName, src, file.Size, minio.PutObjectOptions{})
-	if err != nil {
-		return fmt.Errorf("上传文件失败: %w", err)
+	info, uploadErr := m.Client.PutObject(context.Background(), bucketName, objectName, src, file.Size, minio.PutObjectOptions{})
+	if uploadErr != nil {
+		return "", fmt.Errorf("上传文件失败: %w", err)
 	}
 	zap.S().Info("上传文件成功：", objectName)
-	return nil
+	return info.Location, nil
 }
 
 // DownloadFile 下载文件
