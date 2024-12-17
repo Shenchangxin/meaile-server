@@ -131,10 +131,10 @@ func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo
 			Data: result.Error,
 		}
 	}
-	for _, bookVo := range bookList {
+	for i, bookVo := range bookList {
 		for _, oss := range ossList {
 			if oss.OssId == bookVo.Image {
-				bookVo.ImageOssObj = oss
+				bookList[i].ImageOssObj = oss
 				break
 			}
 		}
