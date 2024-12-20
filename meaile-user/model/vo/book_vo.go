@@ -18,6 +18,7 @@ type MeaileBookVo struct {
 	UpdatedBy    string            `gorm:"column:UPDATED_BY" json:"updatedBy"`      //type:string       comment:更新人      version:2024-11-03 22:16
 	UpdatedTime  time.Time         `gorm:"column:UPDATED_TIME" json:"updatedTime"`  //type:*time.Time   comment:更新时间    version:2024-11-03 22:16
 	TagList      []model.MeaileTag `gorm:"many2many:meaile_book_tag;joinForeignKey:book_id;joinReferences:tag_id;" json:"tagList"`
+	ImageOssObj  model.MeaileOss   `gorm:"-" json:"imageOssObj"`
 }
 
 func (MeaileBookVo) TableName() string {

@@ -60,12 +60,12 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 		}
 	}
 	objectName := uuidStr + "." + parts[len(parts)-1]
-	err = global.MinioClient.UploadFile(global.ServerConfig.MinioConfig.BucketName, objectName, fileHeader)
-	if err != nil {
+	location, uploadErr := global.MinioClient.UploadFile(global.ServerConfig.MinioConfig.BucketName, objectName, fileHeader)
+	if uploadErr != nil {
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "文件上传失败",
-			Data: err,
+			Data: uploadErr,
 		}
 	}
 	// 获取预签名URL（用于下载）
@@ -80,6 +80,7 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 		OssId:       uuidStr,
 		FileName:    fileHeader.Filename,
 		Suffix:      "." + parts[len(parts)-1],
+		FileUrl:     location,
 		CreatedTime: time.Now(),
 		CreatedBy:   customClaims.UserName,
 		UpdatedTime: time.Now(),
