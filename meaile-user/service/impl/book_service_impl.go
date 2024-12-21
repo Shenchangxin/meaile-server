@@ -134,6 +134,8 @@ func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo
 	for i, bookVo := range bookList {
 		for _, oss := range ossList {
 			if oss.OssId == bookVo.Image {
+				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				oss.FileUrl = fileUrl
 				bookList[i].ImageOssObj = oss
 				break
 			}
