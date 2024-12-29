@@ -291,10 +291,31 @@ func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Res
 			Data: err.Error(),
 		}
 	}
+	var user model.MeaileUser
+	result := global.DB.Where("user_name = ?", customClaims.UserName).First(&user)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: result.Error.Error(),
+		}
+	}
+	var avatarOss model.MeaileOss
+	result = global.DB.Where("oss_id = ?", user.Avatar).First(&avatarOss)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: result.Error.Error(),
+		}
+	}
+	fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, avatarOss.OssId+avatarOss.Suffix, 24*time.Hour)
+	avatarOss.FileUrl = fileUrl
+	user.AvatarOssObj = avatarOss
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "获取用户信息成功",
-		Data: customClaims,
+		Data: user,
 	}
 }
 

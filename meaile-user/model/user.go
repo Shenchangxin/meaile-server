@@ -5,8 +5,8 @@ import "time"
 // MeaileUser  用户信息。
 type MeaileUser struct {
 	Id              int64     `gorm:"column:id" json:"id"`                            //type:BIGINT       comment:                  version:2024-08-01 15:52
-	UserName        string    `gorm:"column:user_name" json:"userName"`               //type:string       comment:用户名            version:2024-08-01 15:52
-	NickName        string    `gorm:"column:nick_name" json:"nickName"`               //type:string       comment:昵称              version:2024-08-01 15:52
+	UserName        string    `gorm:"column:user_name" json:"username"`               //type:string       comment:用户名            version:2024-08-01 15:52
+	NickName        string    `gorm:"column:nick_name" json:"nickname"`               //type:string       comment:昵称              version:2024-08-01 15:52
 	Password        string    `gorm:"column:password" json:"password"`                //type:string       comment:密码              version:2024-08-01 15:52
 	Status          string    `gorm:"column:status" json:"status"`                    //type:string       comment:状态              version:2024-08-01 15:52
 	Avatar          string    `gorm:"column:avatar" json:"avatar"`                    //type:string       comment:头像              version:2024-08-01 15:52
@@ -18,4 +18,5 @@ type MeaileUser struct {
 	CreatedTime     time.Time `gorm:"column:CREATED_TIME" json:"createdTime"`         //type:*time.Time   comment:创建时间          version:2024-08-01 15:52
 	UpdatedBy       string    `gorm:"column:UPDATED_BY" json:"updatedBy"`             //type:string       comment:更新人            version:2024-08-01 15:52
 	UpdatedTime     time.Time `gorm:"column:UPDATED_TIME" json:"updatedTime"`         //type:*time.Time   comment:更新时间          version:2024-08-01 15:52
+	AvatarOssObj    MeaileOss `gorm:"-" json:"avatarOssObj"`
 }
