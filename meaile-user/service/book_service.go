@@ -12,4 +12,5 @@ type BookService interface {
 	GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo) *model.Response
 	DeleteBook(ctx *gin.Context, id int64) *model.Response
 	GetBookInfo(ctx *gin.Context, id int64) *model.Response
+	GetMyBooks(ctx *gin.Context, id int64) *model.Response
 }

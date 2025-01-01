@@ -200,3 +200,30 @@ func (b *BookServiceImpl) GetBookInfo(ctx *gin.Context, id int64) *model.Respons
 		Data: book,
 	}
 }
+
+func (b *BookServiceImpl) GetMyBooks(ctx *gin.Context, id int64) *model.Response {
+	token := ctx.Request.Header.Get("x-token")
+	myJwt := middlewares.NewJWT()
+	customClaims, err := myJwt.ParseToken(token)
+	if err != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "获取用户信息失败，请重新登录",
+			Data: err,
+		}
+	}
+	var myBooks model.MeaileBook
+	result := global.DB.Where("created_by = ?", customClaims.UserName).Find(&myBooks)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "查询成功",
+		Data: myBooks,
+	}
+}

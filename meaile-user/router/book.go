@@ -13,4 +13,5 @@ func InitBookRouter(Router *gin.RouterGroup) {
 	BookRouter.DELETE("deleteBook/:id", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DeleteBook)
 	BookRouter.GET("getBookInfo/:id", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetBookInfo)
 	BookRouter.GET("getBookListByTagId", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetBookListByTag)
+	BookRouter.GET("getMyBooks", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetMyBooks)
 }
