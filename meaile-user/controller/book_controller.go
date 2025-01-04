@@ -44,6 +44,17 @@ func UpdateBook(ctx *gin.Context) {
 	return
 }
 
+func GetMyBooks(ctx *gin.Context) {
+	bookService := impl.BookServiceImpl{}
+	response := bookService.GetMyBooks(ctx)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+
 func GetBookListByTag(ctx *gin.Context) {
 	bookBo := model.BookQueryBo{}
 	tagIdStr := ctx.Query("tagId")
