@@ -21,5 +21,7 @@ func Routers() *gin.Engine {
 	router.InitTagRouter(ApiGroup)
 	zap.S().Info("----配置Book相关URL----")
 	router.InitBookRouter(ApiGroup)
+	zap.S().Info("----配置Ai相关URL----")
+	router.InitAiRouter(ApiGroup)
 	return Router
 }
