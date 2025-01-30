@@ -201,7 +201,7 @@ func (b *BookServiceImpl) GetBookInfo(ctx *gin.Context, id int64) *model.Respons
 	}
 }
 
-func (b *BookServiceImpl) GetMyBooks(ctx *gin.Context, id int64) *model.Response {
+func (b *BookServiceImpl) GetMyBooks(ctx *gin.Context) *model.Response {
 	token := ctx.Request.Header.Get("x-token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
@@ -212,13 +212,29 @@ func (b *BookServiceImpl) GetMyBooks(ctx *gin.Context, id int64) *model.Response
 			Data: err,
 		}
 	}
-	var myBooks model.MeaileBook
+	var myBooks []vo.MeaileBookVo
 	result := global.DB.Where("created_by = ?", customClaims.UserName).Find(&myBooks)
 	if result.Error != nil {
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "查询失败",
 			Data: result.Error,
+		}
+	}
+	var imageOssIds []string
+	for _, book := range myBooks {
+		imageOssIds = append(imageOssIds, book.Image)
+	}
+	var ossList []model.MeaileOss
+	result = global.DB.Where("oss_id in (?)", imageOssIds).Find(&ossList)
+	for i, bookVo := range myBooks {
+		for _, oss := range ossList {
+			if oss.OssId == bookVo.Image {
+				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				oss.FileUrl = fileUrl
+				myBooks[i].ImageOssObj = oss
+				break
+			}
 		}
 	}
 	return &model.Response{
