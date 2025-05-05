@@ -11,7 +11,7 @@ import (
 // 记录日志的中间件
 func LogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.Request.Header.Get("x-token")
+		token := c.Request.Header.Get("X-Token")
 		myJwt := NewJWT()
 		customClaims, err := myJwt.ParseToken(token)
 		if err != nil {

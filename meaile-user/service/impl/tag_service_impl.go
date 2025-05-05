@@ -31,7 +31,7 @@ func (t *TagServiceImpl) GetTagListByParentId(ctx *gin.Context, parentId int64) 
 
 func (*TagServiceImpl) GetTagListByUser(ctx *gin.Context, tagBo bo.MeaileTagBo) *model.Response {
 	var tagList []model.MeaileTag
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -60,7 +60,7 @@ func (*TagServiceImpl) GetTagListByUser(ctx *gin.Context, tagBo bo.MeaileTagBo) 
 	}
 }
 func (*TagServiceImpl) SaveTag(ctx *gin.Context, tagBo bo.MeaileTagBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -102,7 +102,7 @@ func (*TagServiceImpl) SaveTag(ctx *gin.Context, tagBo bo.MeaileTagBo) *model.Re
 }
 
 func (*TagServiceImpl) UpdateTag(ctx *gin.Context, tagBo bo.MeaileTagBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -143,7 +143,7 @@ func (*TagServiceImpl) UpdateTag(ctx *gin.Context, tagBo bo.MeaileTagBo) *model.
 
 func (*TagServiceImpl) DeleteTag(ctx *gin.Context, id int64) *model.Response {
 	var tag model.MeaileTag
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {

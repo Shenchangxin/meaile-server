@@ -57,7 +57,7 @@ func (u *UserServiceImpl) GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) 
 }
 
 func (u *UserServiceImpl) UpdateUser(ctx *gin.Context, registerUserBo bo.MeaileUserBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -320,7 +320,7 @@ func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Res
 }
 
 func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFriendBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	if token == "" {
 		return &model.Response{
 			Code: model.FAILED,
@@ -366,7 +366,7 @@ func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFrie
 	}
 }
 func (u *UserServiceImpl) DeleteFriend(ctx *gin.Context, userId int64) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	if token == "" {
 		return &model.Response{
 			Code: model.FAILED,
