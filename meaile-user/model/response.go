@@ -5,6 +5,27 @@ import (
 	"net/http"
 )
 
+type Pagination struct {
+	Total    int64       `json:"total"`    // 总记录数
+	PageNum  int         `json:"pageNum"`  // 当前页码
+	PageSize int         `json:"pageSize"` // 每页大小
+	List     interface{} `json:"list"`     // 数据列表
+}
+
+// 封装分页响应数据
+func NewPaginationResponse(total int64, pageNum, pageSize int, list interface{}) *Response {
+	return &Response{
+		Code: SUCCESS,
+		Msg:  "success",
+		Data: Pagination{
+			Total:    total,
+			PageNum:  pageNum,
+			PageSize: pageSize,
+			List:     list,
+		},
+	}
+}
+
 type Response struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`

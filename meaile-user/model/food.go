@@ -13,7 +13,7 @@ import "time"
 // class:HongMouer.HIS.Models.MeaileFood
 // version:2024-08-30 10:24
 type MeaileFood struct {
-	Id           int64     `gorm:"column:id" json:"Id"`                     //type:BIGINT       comment:主键            version:2024-08-30 10:24
+	Id           int64     `gorm:"column:id" json:"id"`                     //type:BIGINT       comment:主键            version:2024-08-30 10:24
 	FoodName     string    `gorm:"column:food_name" json:"foodName"`        //type:string       comment:餐品名称        version:2024-08-30 10:24
 	Image        string    `gorm:"column:image" json:"image"`               //type:string       comment:菜品封面图片    version:2024-08-30 10:24
 	Introduction string    `gorm:"column:introduction" json:"introduction"` //type:string       comment:菜品介绍        version:2024-08-30 10:24

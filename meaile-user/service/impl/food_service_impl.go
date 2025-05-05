@@ -19,7 +19,7 @@ type FoodServiceImpl struct {
 }
 
 func (f *FoodServiceImpl) SaveFood(ctx *gin.Context, bo bo.MeaileFoodBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -76,7 +76,7 @@ func (f *FoodServiceImpl) SaveFood(ctx *gin.Context, bo bo.MeaileFoodBo) *model.
 	}
 }
 func (f *FoodServiceImpl) DeleteFood(ctx *gin.Context, ids []int64) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -130,7 +130,7 @@ func (f *FoodServiceImpl) DeleteFood(ctx *gin.Context, ids []int64) *model.Respo
 	}
 }
 func (f *FoodServiceImpl) UpdateFood(ctx *gin.Context, bo bo.MeaileFoodBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -202,7 +202,7 @@ func (f *FoodServiceImpl) UpdateFood(ctx *gin.Context, bo bo.MeaileFoodBo) *mode
 	}
 }
 func (f *FoodServiceImpl) GetMyFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {

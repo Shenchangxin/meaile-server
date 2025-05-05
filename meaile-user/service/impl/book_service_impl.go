@@ -2,6 +2,7 @@ package impl
 
 import (
 	"github.com/gin-gonic/gin"
+	bookEnum "meaile-server/meaile-user/enums"
 	"meaile-server/meaile-user/global"
 	"meaile-server/meaile-user/middlewares"
 	"meaile-server/meaile-user/model"
@@ -14,7 +15,7 @@ type BookServiceImpl struct {
 }
 
 func (b *BookServiceImpl) SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -51,7 +52,7 @@ func (b *BookServiceImpl) SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.
 	}
 }
 func (b *BookServiceImpl) UpdateBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -147,10 +148,60 @@ func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo
 		Data: bookList,
 	}
 }
-
+func (b *BookServiceImpl) GetRecommendBookList(ctx *gin.Context, bo bo.BookQueryBo) *model.Response {
+	var bookList []vo.MeaileBookVo
+	var totalCount int64
+	result := global.DB.Model(&model.MeaileBook{}).Where("status = (?)", bookEnum.LISTING).Count(&totalCount)
+	offset := (bo.PageNum - 1) * bo.PageSize
+	limit := bo.PageSize
+	result = global.DB.Where("status = (?)", bookEnum.LISTING).Order("favorite desc").Offset(offset).Limit(limit).Find(&bookList)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var imageOssIds []string
+	for _, book := range bookList {
+		imageOssIds = append(imageOssIds, book.Image)
+	}
+	var ossList []model.MeaileOss
+	result = global.DB.Where("oss_id in (?)", imageOssIds).Find(&ossList)
+	//result = global.DB.Table("meaile_book mb").
+	//	Select("mb.*,mt.*").
+	//	Joins("left join meaile_book_tag mbt on mbt.book_id = mb.id").
+	//	Joins("left join meaile_book_tag mbt2 on mbt2.book_id = mb.id").
+	//	Joins("left join meaile_tag mt on mt.id = mbt2.tag_id").
+	//	Where("mbt.tag_id = ?", bo.TagId).Order("mb." + bo.SortField + " " + bo.AscOrDesc).
+	//	Scan(&bookList)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for i, bookVo := range bookList {
+		for _, oss := range ossList {
+			if oss.OssId == bookVo.Image {
+				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				oss.FileUrl = fileUrl
+				bookList[i].ImageOssObj = oss
+				break
+			}
+		}
+	}
+	return model.NewPaginationResponse(
+		totalCount,
+		bo.PageNum,
+		bo.PageSize,
+		bookList,
+	)
+}
 func (b *BookServiceImpl) DeleteBook(ctx *gin.Context, id int64) *model.Response {
 
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -202,7 +253,7 @@ func (b *BookServiceImpl) GetBookInfo(ctx *gin.Context, id int64) *model.Respons
 }
 
 func (b *BookServiceImpl) GetMyBooks(ctx *gin.Context) *model.Response {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {

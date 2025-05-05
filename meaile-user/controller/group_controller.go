@@ -62,7 +62,7 @@ func UpdateGroup(ctx *gin.Context) {
 }
 func GroupList(ctx *gin.Context) {
 	groupService := impl.GroupServiceImpl{}
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
