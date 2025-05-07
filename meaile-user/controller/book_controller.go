@@ -18,7 +18,7 @@ func SaveBook(ctx *gin.Context) {
 	}
 	bookService := impl.BookServiceImpl{}
 	response := bookService.SaveBook(ctx, bookBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -36,7 +36,7 @@ func UpdateBook(ctx *gin.Context) {
 	}
 	bookService := impl.BookServiceImpl{}
 	response := bookService.UpdateBook(ctx, bookBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -47,7 +47,7 @@ func UpdateBook(ctx *gin.Context) {
 func GetMyBooks(ctx *gin.Context) {
 	bookService := impl.BookServiceImpl{}
 	response := bookService.GetMyBooks(ctx)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -72,7 +72,38 @@ func GetBookListByTag(ctx *gin.Context) {
 	bookBo.AscOrDesc = ascOrDesc
 	bookService := impl.BookServiceImpl{}
 	response := bookService.GetBookListByTagId(ctx, bookBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+
+func GetRecommendBookList(ctx *gin.Context) {
+	bookBo := model.BookQueryBo{}
+	pageNumStr := ctx.Query("pageNum")
+	pageSizeStr := ctx.Query("pageSize")
+	pageNum, err := strconv.Atoi(pageNumStr)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	bookBo.PageNum = pageNum
+	bookBo.PageSize = pageSize
+
+	bookService := impl.BookServiceImpl{}
+	response := bookService.GetRecommendBookList(ctx, bookBo)
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -91,7 +122,7 @@ func DeleteBook(ctx *gin.Context) {
 	}
 	bookService := impl.BookServiceImpl{}
 	response := bookService.DeleteBook(ctx, id)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -110,7 +141,7 @@ func GetBookInfo(ctx *gin.Context) {
 	}
 	bookService := impl.BookServiceImpl{}
 	response := bookService.GetBookInfo(ctx, id)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,

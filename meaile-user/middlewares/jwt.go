@@ -13,8 +13,8 @@ import (
 func JWTAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		//我们这里jwt鉴权取头部信息x-token 登录时返回token信息，这里前端需要把token传过来
-		token := ctx.Request.Header.Get("x-token")
+		//我们这里jwt鉴权取头部信息X-Token 登录时返回token信息，这里前端需要把token传过来
+		token := ctx.Request.Header.Get("X-Token")
 		if token == "" {
 			ctx.JSON(http.StatusUnauthorized, map[string]string{
 				"msg": "请先登录",

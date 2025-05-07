@@ -19,11 +19,16 @@ func Login(ctx *gin.Context) {
 	}
 	userService := impl.UserServiceImpl{}
 	response := userService.Login(ctx, loginForm)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
 	})
+	//ctx.JSON(http.StatusOK, gin.H{
+	//	"code": response.Code,
+	//	"msg":  response.Msg,
+	//	"data": response.Data,
+	//})
 	return
 }
 
@@ -67,7 +72,7 @@ func UpdateUserInfo(ctx *gin.Context) {
 
 // GetUserFriendList 获取用户好友以及分组列表/**
 func GetUserFriendList(ctx *gin.Context) {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	if token == "" {
 		ctx.JSON(http.StatusServiceUnavailable, gin.H{
 			"code": 500,
@@ -88,7 +93,7 @@ func GetUserFriendList(ctx *gin.Context) {
 
 // GetUserInfo 获取用户详细信息/**
 func GetUserInfo(ctx *gin.Context) {
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	if token == "" {
 		ctx.JSON(http.StatusServiceUnavailable, gin.H{
 			"code": 500,

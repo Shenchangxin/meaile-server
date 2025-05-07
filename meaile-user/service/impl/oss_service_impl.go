@@ -22,7 +22,7 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 	var u uuid.UUID
 	var ossInfo model.MeaileOss
 	var uuidStr string
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {

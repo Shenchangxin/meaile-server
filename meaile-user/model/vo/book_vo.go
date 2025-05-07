@@ -6,7 +6,7 @@ import (
 )
 
 type MeaileBookVo struct {
-	Id           int64             `gorm:"column:id;primaryKey" json:"Id"`          //type:BIGINT       comment:主键        version:2024-11-03 22:16
+	Id           int64             `gorm:"column:id;primaryKey" json:"id"`          //type:BIGINT       comment:主键        version:2024-11-03 22:16
 	BookName     string            `gorm:"column:book_name" json:"bookName"`        //type:string       comment:菜谱名称    version:2024-11-03 22:16
 	Image        string            `gorm:"column:image" json:"image"`               //type:string       comment:封面照片    version:2024-11-03 22:16
 	Introduction string            `gorm:"column:introduction" json:"introduction"` //type:string       comment:菜谱介绍    version:2024-11-03 22:16

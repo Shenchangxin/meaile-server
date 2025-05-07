@@ -26,7 +26,7 @@ func (u *GroupServiceImpl) SaveGroup(ctx *gin.Context, groupBo bo.MeaileFriendGr
 			Data: nil,
 		}
 	}
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {
@@ -82,7 +82,7 @@ func (u *GroupServiceImpl) DeleteGroup(ctx *gin.Context, groupIds bo.DeleteGroup
 }
 func (u *GroupServiceImpl) UpdateGroup(ctx *gin.Context, groupBo bo.MeaileFriendGroupBo) *model.Response {
 	var group model.MeaileFriendGroup
-	token := ctx.Request.Header.Get("x-token")
+	token := ctx.Request.Header.Get("X-Token")
 	myJwt := middlewares.NewJWT()
 	customClaims, err := myJwt.ParseToken(token)
 	if err != nil {

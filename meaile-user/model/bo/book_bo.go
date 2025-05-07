@@ -3,7 +3,7 @@ package model
 import "time"
 
 type MeaileBookBo struct {
-	Id           int64     `gorm:"column:id" json:"Id"`                     //type:BIGINT       comment:主键        version:2024-11-03 22:16
+	Id           int64     `gorm:"column:id" json:"id"`                     //type:BIGINT       comment:主键        version:2024-11-03 22:16
 	BookName     string    `gorm:"column:book_name" json:"bookName"`        //type:string       comment:菜谱名称    version:2024-11-03 22:16
 	Image        string    `gorm:"column:image" json:"image"`               //type:string       comment:封面照片    version:2024-11-03 22:16
 	Introduction string    `gorm:"column:introduction" json:"introduction"` //type:string       comment:菜谱介绍    version:2024-11-03 22:16
@@ -19,5 +19,7 @@ type MeaileBookBo struct {
 type BookQueryBo struct {
 	TagId     int64  `json:"tagId"`
 	SortField string `json:"sortField"`
+	PageNum   int    `json:"pageNum"`
+	PageSize  int    `json:"pageSize"`
 	AscOrDesc string `json:"ascOrDesc"`
 }
