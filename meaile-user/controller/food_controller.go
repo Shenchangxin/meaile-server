@@ -19,7 +19,7 @@ func SaveFood(ctx *gin.Context) {
 	}
 	foodService := impl.FoodServiceImpl{}
 	response := foodService.SaveFood(ctx, foodBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -41,7 +41,7 @@ func DeleteFood(ctx *gin.Context) {
 	}
 	foodService := impl.FoodServiceImpl{}
 	response := foodService.DeleteFood(ctx, idNumbers)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -58,7 +58,7 @@ func UpdateFood(ctx *gin.Context) {
 	}
 	foodService := impl.FoodServiceImpl{}
 	response := foodService.UpdateFood(ctx, foodBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -75,7 +75,7 @@ func GetMyFoods(ctx *gin.Context) {
 	}
 	foodService := impl.FoodServiceImpl{}
 	response := foodService.GetMyFoodList(ctx, foodBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -92,7 +92,24 @@ func GetFoods(ctx *gin.Context) {
 	}
 	foodService := impl.FoodServiceImpl{}
 	response := foodService.GetFoodList(ctx, foodBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
+func GetFollowFoods(ctx *gin.Context) {
+	foodBo := model.FoodQuery{}
+	if err := ctx.ShouldBind(&foodBo); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	foodService := impl.FoodServiceImpl{}
+	response := foodService.GetFollowFoodList(ctx, foodBo)
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -103,7 +120,7 @@ func GetFoodInfo(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	idInt, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusInternalServerError,
 			"msg":  "参数错误",
 			"data": err,
