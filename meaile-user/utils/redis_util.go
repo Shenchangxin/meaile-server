@@ -8,11 +8,15 @@ import (
 )
 
 type RedisClient struct {
-	RedisClient *redis.Client
+	client *redis.Client
+}
+
+func NewRedisClient(client *redis.Client) *RedisClient {
+	return &RedisClient{client: client}
 }
 
 func (r *RedisClient) Set(ctx context.Context, key, value string) bool {
-	result, err := r.RedisClient.Set(ctx, key, value, 0).Result()
+	result, err := r.client.Set(ctx, key, value, 0).Result()
 	if err != nil {
 		zap.S().Error("----Redis Set Failed----" + key + ":" + value)
 		return false
@@ -21,7 +25,7 @@ func (r *RedisClient) Set(ctx context.Context, key, value string) bool {
 }
 
 func (r *RedisClient) SetEx(ctx context.Context, key, value string, ex time.Duration) bool {
-	result, err := r.RedisClient.Set(ctx, key, value, ex).Result()
+	result, err := r.client.Set(ctx, key, value, ex).Result()
 	if err != nil {
 		zap.S().Error("----Redis Set Failed----" + key + ":" + value)
 		return false
@@ -30,7 +34,7 @@ func (r *RedisClient) SetEx(ctx context.Context, key, value string, ex time.Dura
 }
 
 func (r *RedisClient) Get(ctx context.Context, key string) (string, bool) {
-	result, err := r.RedisClient.Get(ctx, key).Result()
+	result, err := r.client.Get(ctx, key).Result()
 	if err != nil {
 		zap.S().Error("----Redis Get Failed----" + key)
 		return "", false
@@ -38,7 +42,7 @@ func (r *RedisClient) Get(ctx context.Context, key string) (string, bool) {
 	return result, true
 }
 func (r *RedisClient) GetSet(ctx context.Context, key, value string) (string, bool) {
-	oldValue, err := r.RedisClient.GetSet(ctx, key, value).Result()
+	oldValue, err := r.client.GetSet(ctx, key, value).Result()
 	if err != nil {
 		zap.S().Error("----Redis GetSet Failed----" + key)
 		return "", false
@@ -46,7 +50,7 @@ func (r *RedisClient) GetSet(ctx context.Context, key, value string) (string, bo
 	return oldValue, true
 }
 func (r *RedisClient) Incr(ctx context.Context, key string) (int64, bool) {
-	result, err := r.RedisClient.Incr(ctx, key).Result()
+	result, err := r.client.Incr(ctx, key).Result()
 	if err != nil {
 		zap.S().Error("----Redis Incr Failed----" + key)
 		return result, false
@@ -54,7 +58,7 @@ func (r *RedisClient) Incr(ctx context.Context, key string) (int64, bool) {
 	return result, true
 }
 func (r *RedisClient) IncrBy(ctx context.Context, key string, incr int64) (int64, bool) {
-	result, err := r.RedisClient.IncrBy(ctx, key, incr).Result()
+	result, err := r.client.IncrBy(ctx, key, incr).Result()
 	if err != nil {
 		zap.S().Error("----Redis IncrBy Failed----" + key)
 		return result, false
@@ -62,7 +66,7 @@ func (r *RedisClient) IncrBy(ctx context.Context, key string, incr int64) (int64
 	return result, true
 }
 func (r *RedisClient) IncrByFloat(ctx context.Context, key string, incrFloat float64) (float64, bool) {
-	result, err := r.RedisClient.IncrByFloat(ctx, key, incrFloat).Result()
+	result, err := r.client.IncrByFloat(ctx, key, incrFloat).Result()
 	if err != nil {
 		zap.S().Error("----Redis IncrByFloat Failed----" + key)
 		return result, false

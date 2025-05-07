@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"meaile-server/meaile-user/global"
+	"meaile-server/meaile-user/utils"
 )
 
 func InitRedis() {
@@ -14,5 +15,6 @@ func InitRedis() {
 		Password: redisConfig.Password, // Redis密码，如果没有则为空字符串
 		DB:       redisConfig.Database, // 使用默认DB
 	})
-	global.RedisClient = redisClient
+	utilsRedisClient := utils.NewRedisClient(redisClient)
+	global.RedisClient = utilsRedisClient
 }
