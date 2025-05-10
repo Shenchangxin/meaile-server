@@ -213,6 +213,48 @@ func (f *FoodServiceImpl) GetMyFoodList(ctx *gin.Context, query bo.FoodQuery) *m
 		Data: foods,
 	}
 }
+func (f *FoodServiceImpl) GetFollowFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
+	var foods []vo.MeaileFoodVo
+	offset := (query.PageQuery.PageNum - 1) * query.PageQuery.PageSize
+	db := global.DB.Offset(offset).Limit(query.PageQuery.PageSize)
+	//TODO 查出来当前用户关注列表，然后查询这些人的食物作品
+	db.Joins("inner join meaile_food_tag mft on mft.tag_id = ?", query.TagId)
+
+	result := db.Order("favorite DESC").Find(&foods)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var creators []string
+	for _, food := range foods {
+		creators = append(creators, food.CreatedBy)
+	}
+	creatorsStr := strings.Join(creators, ", ")
+	var users []model.MeaileUser
+	result = global.DB.Where("user_name in (?)", creatorsStr).Find(&users)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for _, food := range foods {
+		for _, user := range users {
+			if user.UserName == food.CreatedBy {
+				food.Creator = user
+			}
+		}
+	}
+	return &model.Response{
+		Code: http.StatusOK,
+		Msg:  "查询成功",
+		Data: foods,
+	}
+}
 func (f *FoodServiceImpl) GetFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
 	var foods []vo.MeaileFoodVo
 	offset := (query.PageNum - 1) * query.PageSize

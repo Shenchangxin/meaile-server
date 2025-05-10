@@ -107,6 +107,7 @@ func GetFollowFoods(ctx *gin.Context) {
 		})
 		return
 	}
+
 	pageNumStr := ctx.Query("pageNum")
 	pageSizeStr := ctx.Query("pageSize")
 	pageNum, err := strconv.Atoi(pageNumStr)
