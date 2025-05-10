@@ -43,7 +43,7 @@ func Register(ctx *gin.Context) {
 	}
 	userService := impl.UserServiceImpl{}
 	response := userService.Register(ctx, registerUserBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -62,7 +62,7 @@ func UpdateUserInfo(ctx *gin.Context) {
 	}
 	userService := impl.UserServiceImpl{}
 	response := userService.UpdateUser(ctx, registerUserBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -72,18 +72,9 @@ func UpdateUserInfo(ctx *gin.Context) {
 
 // GetUserFriendList 获取用户好友以及分组列表/**
 func GetUserFriendList(ctx *gin.Context) {
-	token := ctx.Request.Header.Get("X-Token")
-	if token == "" {
-		ctx.JSON(http.StatusServiceUnavailable, gin.H{
-			"code": 500,
-			"msg":  "登录已过期，请重新登录",
-			"data": nil,
-		})
-		return
-	}
 	userService := impl.UserServiceImpl{}
-	response := userService.GetUserFriendList(ctx, token)
-	ctx.JSON(http.StatusOK, gin.H{
+	response := userService.GetUserFriendList(ctx)
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -93,19 +84,9 @@ func GetUserFriendList(ctx *gin.Context) {
 
 // GetUserInfo 获取用户详细信息/**
 func GetUserInfo(ctx *gin.Context) {
-	token := ctx.Request.Header.Get("X-Token")
-	if token == "" {
-		ctx.JSON(http.StatusServiceUnavailable, gin.H{
-			"code": 500,
-			"msg":  "登录已过期，请重新登录",
-			"data": nil,
-		})
-		return
-	}
-
 	userService := impl.UserServiceImpl{}
-	response := userService.GetUserInfo(ctx, token)
-	ctx.JSON(http.StatusOK, gin.H{
+	response := userService.GetUserInfo(ctx)
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -125,7 +106,7 @@ func AddFriend(ctx *gin.Context) {
 	}
 	userService := impl.UserServiceImpl{}
 	response := userService.AddFriend(ctx, addUserFriendBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -139,7 +120,7 @@ func DeleteFriend(ctx *gin.Context) {
 	idStr := ctx.Query("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusInternalServerError,
 			"msg":  "参数错误",
 			"data": err,
@@ -148,7 +129,7 @@ func DeleteFriend(ctx *gin.Context) {
 	}
 	userService := impl.UserServiceImpl{}
 	response := userService.DeleteFriend(ctx, id)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,

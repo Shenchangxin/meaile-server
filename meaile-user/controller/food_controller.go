@@ -107,6 +107,25 @@ func GetFollowFoods(ctx *gin.Context) {
 		})
 		return
 	}
+
+	pageNumStr := ctx.Query("pageNum")
+	pageSizeStr := ctx.Query("pageSize")
+	pageNum, err := strconv.Atoi(pageNumStr)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	foodBo.PageNum = pageNum
+	foodBo.PageSize = pageSize
 	foodService := impl.FoodServiceImpl{}
 	response := foodService.GetFollowFoodList(ctx, foodBo)
 	ctx.JSON(response.Code, gin.H{
@@ -129,7 +148,7 @@ func GetFoodInfo(ctx *gin.Context) {
 	}
 	foodService := impl.FoodServiceImpl{}
 	response := foodService.GetFoodInfo(ctx, idInt)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,

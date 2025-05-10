@@ -1,7 +1,6 @@
 package model
 
 import (
-	"meaile-server/meaile-user/model"
 	"time"
 )
 
@@ -18,7 +17,8 @@ type MeaileFoodBo struct {
 	Tags         []string
 }
 type FoodQuery struct {
-	PageQuery    model.PageQuery
+	PageSize     int     `json:"pageSize"`
+	PageNum      int     `json:"pageNum"`
 	FoodName     string  `json:"foodName"`
 	Introduction string  `json:"introduction"`
 	Favorite     float64 `json:"favorite"`
