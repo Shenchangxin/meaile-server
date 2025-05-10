@@ -134,6 +134,41 @@ func GetFollowFoods(ctx *gin.Context) {
 	})
 	return
 }
+func GetRecommendFoods(ctx *gin.Context) {
+	foodBo := model.FoodQuery{}
+	if err := ctx.ShouldBind(&foodBo); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	pageNumStr := ctx.Query("pageNum")
+	pageSizeStr := ctx.Query("pageSize")
+	pageNum, err := strconv.Atoi(pageNumStr)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
+	foodBo.PageNum = pageNum
+	foodBo.PageSize = pageSize
+	foodService := impl.FoodServiceImpl{}
+	response := foodService.GetRecommendFoodList(ctx, foodBo)
+	ctx.JSON(response.Code, gin.H{
+		"code": response.Code,
+		"msg":  response.Msg,
+		"data": response.Data,
+	})
+	return
+}
 func GetFoodInfo(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	idInt, err := strconv.ParseInt(idStr, 10, 64)

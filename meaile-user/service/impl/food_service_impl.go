@@ -336,6 +336,69 @@ func (f *FoodServiceImpl) GetFollowFoodList(ctx *gin.Context, query bo.FoodQuery
 		Data: foods,
 	}
 }
+func (f *FoodServiceImpl) GetRecommendFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
+	var foods []vo.MeaileFoodVo
+	offset := (query.PageNum - 1) * query.PageSize
+	db := global.DB.Offset(offset).Limit(query.PageSize)
+
+	result := db.Order("favorite DESC").Find(&foods)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var creators []string
+	for _, food := range foods {
+		creators = append(creators, food.CreatedBy)
+	}
+	//creatorsStr := strings.Join(creators, ", ")
+	var users []model.MeaileUser
+	result = global.DB.Where("user_name in (?)", creators).Find(&users)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for _, food := range foods {
+		for _, user := range users {
+			if user.UserName == food.CreatedBy {
+				food.Creator = user
+			}
+		}
+	}
+	var imageOssIds []string
+	for _, food := range foods {
+		imageOssIds = append(imageOssIds, food.Image)
+	}
+	var ossList []model.MeaileOss
+	result = global.DB.Where("oss_id in (?)", imageOssIds).Find(&ossList)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for i, foodVo := range foods {
+		for _, oss := range ossList {
+			if oss.OssId == foodVo.Image {
+				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				oss.FileUrl = fileUrl
+				foods[i].ImageOssObj = oss
+				break
+			}
+		}
+	}
+	return &model.Response{
+		Code: http.StatusOK,
+		Msg:  "查询成功",
+		Data: foods,
+	}
+}
 func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Response {
 	var foodInfo model.MeaileFood
 	result := global.DB.Where("id = ?", id).First(&foodInfo)
