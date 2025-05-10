@@ -23,5 +23,8 @@ func Routers() *gin.Engine {
 	router.InitBookRouter(ApiGroup)
 	zap.S().Info("----配置Follow相关URL----")
 	router.InitFollowRouter(ApiGroup)
+	zap.S().Info("----配置Ai相关URL----")
+	router.InitAiRouter(ApiGroup)
+
 	return Router
 }
