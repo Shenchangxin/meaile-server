@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 	"io"
 	"meaile-server/meaile-user/global"
-	"meaile-server/meaile-user/middlewares"
 	"meaile-server/meaile-user/model"
 	"mime/multipart"
 	"strings"
@@ -22,16 +21,8 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 	var u uuid.UUID
 	var ossInfo model.MeaileOss
 	var uuidStr string
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	parts := strings.Split(fileHeader.Filename, ".")
 	if len(parts) <= 1 {
 		return &model.Response{

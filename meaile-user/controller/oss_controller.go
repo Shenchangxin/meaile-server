@@ -19,7 +19,7 @@ func Upload(ctx *gin.Context) {
 	ossService := impl.OssServiceImpl{}
 
 	response := ossService.Upload(ctx, header)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -83,7 +83,7 @@ func GetUrl(ctx *gin.Context) {
 	ossService := impl.OssServiceImpl{}
 
 	response := ossService.GetUrl(ctx, idInt)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,

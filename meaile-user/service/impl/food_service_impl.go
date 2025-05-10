@@ -2,6 +2,7 @@ package impl
 
 import (
 	"errors"
+	"github.com/elliotchance/pie/v2"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"meaile-server/meaile-user/global"
@@ -76,16 +77,8 @@ func (f *FoodServiceImpl) SaveFood(ctx *gin.Context, bo bo.MeaileFoodBo) *model.
 	}
 }
 func (f *FoodServiceImpl) DeleteFood(ctx *gin.Context, ids []int64) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var foods []model2.MeaileFood
 	result := global.DB.Where("id in ? and created_by = ?", ids, customClaims.UserName).Find(&foods)
 	if result.Error != nil {
@@ -130,16 +123,8 @@ func (f *FoodServiceImpl) DeleteFood(ctx *gin.Context, ids []int64) *model.Respo
 	}
 }
 func (f *FoodServiceImpl) UpdateFood(ctx *gin.Context, bo bo.MeaileFoodBo) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	food := model2.MeaileFood{
 		FoodName:     bo.FoodName,
 		Image:        bo.Image,
@@ -202,19 +187,11 @@ func (f *FoodServiceImpl) UpdateFood(ctx *gin.Context, bo bo.MeaileFoodBo) *mode
 	}
 }
 func (f *FoodServiceImpl) GetMyFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var foods []model.MeaileFood
-	offset := (query.PageQuery.PageNum - 1) * query.PageQuery.PageSize
-	db := global.DB.Offset(offset).Limit(query.PageQuery.PageSize)
+	offset := (query.PageNum - 1) * query.PageSize
+	db := global.DB.Offset(offset).Limit(query.PageSize)
 	db.Where("created_by = ?", customClaims.UserName)
 	if query.FoodName != "" {
 		db.Where("food_name like %?%", query.FoodName)
@@ -238,8 +215,8 @@ func (f *FoodServiceImpl) GetMyFoodList(ctx *gin.Context, query bo.FoodQuery) *m
 }
 func (f *FoodServiceImpl) GetFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
 	var foods []vo.MeaileFoodVo
-	offset := (query.PageQuery.PageNum - 1) * query.PageQuery.PageSize
-	db := global.DB.Offset(offset).Limit(query.PageQuery.PageSize)
+	offset := (query.PageNum - 1) * query.PageSize
+	db := global.DB.Offset(offset).Limit(query.PageSize)
 	if query.FoodName != "" {
 		db.Where("food_name like %?%", query.FoodName)
 	}
@@ -272,6 +249,84 @@ func (f *FoodServiceImpl) GetFoodList(ctx *gin.Context, query bo.FoodQuery) *mod
 		for _, user := range users {
 			if user.UserName == food.CreatedBy {
 				food.Creator = user
+			}
+		}
+	}
+	return &model.Response{
+		Code: http.StatusOK,
+		Msg:  "查询成功",
+		Data: foods,
+	}
+}
+func (f *FoodServiceImpl) GetFollowFoodList(ctx *gin.Context, query bo.FoodQuery) *model.Response {
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
+	var foods []vo.MeaileFoodVo
+	offset := (query.PageNum - 1) * query.PageSize
+	var userFollowList []vo.MeaileUserFollowVo
+	result := global.DB.Where("user_name = ?", customClaims.UserName).Find(&userFollowList)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	// 提取 UserIdFriend 属性
+	userIds := pie.Map(userFollowList, func(f vo.MeaileUserFollowVo) string {
+		return f.FollowUserName
+	})
+	db := global.DB.Offset(offset).Limit(query.PageSize)
+
+	result = db.Where("created_by in (?)", userIds).Order("favorite DESC").Find(&foods)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var creators []string
+	for _, food := range foods {
+		creators = append(creators, food.CreatedBy)
+	}
+	//creatorsStr := strings.Join(creators, ", ")
+	var users []model.MeaileUser
+	result = global.DB.Where("user_name in (?)", creators).Find(&users)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for _, food := range foods {
+		for _, user := range users {
+			if user.UserName == food.CreatedBy {
+				food.Creator = user
+			}
+		}
+	}
+	var imageOssIds []string
+	for _, food := range foods {
+		imageOssIds = append(imageOssIds, food.Image)
+	}
+	var ossList []model.MeaileOss
+	result = global.DB.Where("oss_id in (?)", imageOssIds).Find(&ossList)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for i, foodVo := range foods {
+		for _, oss := range ossList {
+			if oss.OssId == foodVo.Image {
+				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				oss.FileUrl = fileUrl
+				foods[i].ImageOssObj = oss
+				break
 			}
 		}
 	}

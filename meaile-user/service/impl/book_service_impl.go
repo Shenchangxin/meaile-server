@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	bookEnum "meaile-server/meaile-user/enums"
 	"meaile-server/meaile-user/global"
-	"meaile-server/meaile-user/middlewares"
 	"meaile-server/meaile-user/model"
 	bo "meaile-server/meaile-user/model/bo"
 	vo "meaile-server/meaile-user/model/vo"
@@ -15,16 +14,8 @@ type BookServiceImpl struct {
 }
 
 func (b *BookServiceImpl) SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	book := model.MeaileBook{
 		BookName:     bo.BookName,
 		Image:        bo.Image,
@@ -42,7 +33,7 @@ func (b *BookServiceImpl) SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "创建失败",
-			Data: err,
+			Data: result.Error,
 		}
 	}
 	return &model.Response{
@@ -52,23 +43,15 @@ func (b *BookServiceImpl) SaveBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.
 	}
 }
 func (b *BookServiceImpl) UpdateBook(ctx *gin.Context, bo bo.MeaileBookBo) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var book model.MeaileBook
 	result := global.DB.Where("id = ? and created_by = ?", bo.Id, customClaims.UserName).Find(&book)
 	if result.Error != nil || result.RowsAffected != 1 {
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "未找到食谱信息",
-			Data: err,
+			Data: result.Error,
 		}
 	}
 	book.BookName = bo.BookName
@@ -83,7 +66,7 @@ func (b *BookServiceImpl) UpdateBook(ctx *gin.Context, bo bo.MeaileBookBo) *mode
 		return &model.Response{
 			Code: model.FAILED,
 			Msg:  "更新食谱信息失败",
-			Data: err,
+			Data: result.Error,
 		}
 	}
 
@@ -201,16 +184,8 @@ func (b *BookServiceImpl) GetRecommendBookList(ctx *gin.Context, bo bo.BookQuery
 }
 func (b *BookServiceImpl) DeleteBook(ctx *gin.Context, id int64) *model.Response {
 
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var book model.MeaileBook
 	result := global.DB.Where("id = ? and created_by = ?", id, customClaims.UserName).Find(&book)
 	if result.Error != nil || result.RowsAffected != 1 {
@@ -253,16 +228,8 @@ func (b *BookServiceImpl) GetBookInfo(ctx *gin.Context, id int64) *model.Respons
 }
 
 func (b *BookServiceImpl) GetMyBooks(ctx *gin.Context) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var myBooks []vo.MeaileBookVo
 	result := global.DB.Where("created_by = ?", customClaims.UserName).Find(&myBooks)
 	if result.Error != nil {

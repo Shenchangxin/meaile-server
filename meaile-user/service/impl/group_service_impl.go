@@ -3,7 +3,6 @@ package impl
 import (
 	"github.com/gin-gonic/gin"
 	"meaile-server/meaile-user/global"
-	"meaile-server/meaile-user/middlewares"
 	_ "meaile-server/meaile-user/middlewares"
 	"meaile-server/meaile-user/model"
 	bo "meaile-server/meaile-user/model/bo"
@@ -26,16 +25,8 @@ func (u *GroupServiceImpl) SaveGroup(ctx *gin.Context, groupBo bo.MeaileFriendGr
 			Data: nil,
 		}
 	}
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	group = model.MeaileFriendGroup{
 		GroupName:   groupBo.GroupName,
 		UserId:      groupBo.UserId,
@@ -82,16 +73,8 @@ func (u *GroupServiceImpl) DeleteGroup(ctx *gin.Context, groupIds bo.DeleteGroup
 }
 func (u *GroupServiceImpl) UpdateGroup(ctx *gin.Context, groupBo bo.MeaileFriendGroupBo) *model.Response {
 	var group model.MeaileFriendGroup
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	result := global.DB.Where(&model.MeaileFriendGroup{
 		GroupName: groupBo.GroupName,
 		UserId:    int64(customClaims.ID),

@@ -13,7 +13,7 @@ func TagListByParentId(ctx *gin.Context) {
 	idStr := ctx.Query("parentId")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusInternalServerError,
 			"msg":  "参数错误",
 			"data": err,
@@ -21,7 +21,7 @@ func TagListByParentId(ctx *gin.Context) {
 		return
 	}
 	response := tagService.GetTagListByParentId(ctx, int64(id))
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -34,7 +34,7 @@ func TagListByUser(ctx *gin.Context) {
 	idStr := ctx.Query("parentId")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code": http.StatusInternalServerError,
 			"msg":  "参数错误",
 			"data": err,
@@ -44,7 +44,7 @@ func TagListByUser(ctx *gin.Context) {
 	var tagBo bo.MeaileTagBo
 	tagBo.ParentId = id
 	response := tagService.GetTagListByUser(ctx, tagBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -62,7 +62,7 @@ func SaveTag(ctx *gin.Context) {
 	}
 	tagService := impl.TagServiceImpl{}
 	response := tagService.SaveTag(ctx, tagBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -80,7 +80,7 @@ func UpdateTag(ctx *gin.Context) {
 	}
 	tagService := impl.TagServiceImpl{}
 	response := tagService.UpdateTag(ctx, tagBo)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,
@@ -99,7 +99,7 @@ func DeleteTag(ctx *gin.Context) {
 	}
 	tagService := impl.TagServiceImpl{}
 	response := tagService.DeleteTag(ctx, id)
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(response.Code, gin.H{
 		"code": response.Code,
 		"msg":  response.Msg,
 		"data": response.Data,

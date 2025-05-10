@@ -13,5 +13,6 @@ func InitFoodRouter(Router *gin.RouterGroup) {
 	FoodRouter.GET("deleteFood", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.DeleteFood)
 	FoodRouter.GET("getMyFoodList", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetMyFoods)
 	FoodRouter.GET("getFoodList", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetFoods)
+	FoodRouter.GET("getFollowFoodList", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.GetFollowFoods)
 	FoodRouter.GET("getFoodInfo/:id", middlewares.JWTAuth(), controller.GetFoodInfo)
 }

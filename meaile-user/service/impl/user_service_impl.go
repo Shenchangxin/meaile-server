@@ -57,16 +57,8 @@ func (u *UserServiceImpl) GetUserList(ctx *gin.Context, userBo bo.MeaileUserBo) 
 }
 
 func (u *UserServiceImpl) UpdateUser(ctx *gin.Context, registerUserBo bo.MeaileUserBo) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err,
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var user model.MeaileUser
 	result := global.DB.Where(&model.MeaileUser{
 		UserName: registerUserBo.UserName,
@@ -103,16 +95,9 @@ func (u *UserServiceImpl) UpdateUser(ctx *gin.Context, registerUserBo bo.MeaileU
 		}
 	}
 }
-func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context, token string) *model.Response {
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err.Error(),
-		}
-	}
+func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context) *model.Response {
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	result := make(map[string][]model.MeaileUser)
 	var rawResults []struct {
 		GroupName string
@@ -126,7 +111,7 @@ func (u *UserServiceImpl) GetUserFriendList(ctx *gin.Context, token string) *mod
 		Friend    model.MeaileUser
 	}
 
-	err = global.DB.Table("meaile_user_friend muf").
+	err := global.DB.Table("meaile_user_friend muf").
 		Select("mfg.group_name as GroupName, mu.id as ID,mu.avatar as Avatar, mu.user_name as UserName,mu.nick_name as NickName").
 		Joins("join meaile_friend_group mfg on muf.group_id = mfg.id").
 		Joins("join meaile_user mu on muf.user_id_friend = mu.id").
@@ -281,16 +266,9 @@ func (u *UserServiceImpl) Register(ctx *gin.Context, registerUserBo bo.MeaileUse
 	}
 }
 
-func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Response {
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err.Error(),
-		}
-	}
+func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context) *model.Response {
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var user model.MeaileUser
 	result := global.DB.Where("user_name = ?", customClaims.UserName).First(&user)
 	if result.Error != nil {
@@ -320,23 +298,8 @@ func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context, token string) *model.Res
 }
 
 func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFriendBo) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	if token == "" {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "登录过期，请重新登录",
-			Data: nil,
-		}
-	}
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err.Error(),
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	var userFriends []model.MeaileUserFriend
 	for _, userId := range addFriendBo.UserIds {
 		userFriend := model.MeaileUserFriend{
@@ -366,23 +329,8 @@ func (u *UserServiceImpl) AddFriend(ctx *gin.Context, addFriendBo bo.AddUserFrie
 	}
 }
 func (u *UserServiceImpl) DeleteFriend(ctx *gin.Context, userId int64) *model.Response {
-	token := ctx.Request.Header.Get("X-Token")
-	if token == "" {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "登录过期，请重新登录",
-			Data: nil,
-		}
-	}
-	myJwt := middlewares.NewJWT()
-	customClaims, err := myJwt.ParseToken(token)
-	if err != nil {
-		return &model.Response{
-			Code: model.FAILED,
-			Msg:  "获取用户信息失败，请重新登录",
-			Data: err.Error(),
-		}
-	}
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
 	result := global.DB.Where("user_id_main = ? and user_id_friend = ?", customClaims.ID, userId).Delete(&model.MeaileUserFriend{})
 	if result.Error != nil {
 		return &model.Response{

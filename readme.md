@@ -20,3 +20,4 @@ go get github.com/jinzhu/copier
 go get github.com/minio/minio-go/v7  
 #集成工具包  
 go get golang.org/x/exp/slices  
+go get github.com/elliotchance/pie/v2
