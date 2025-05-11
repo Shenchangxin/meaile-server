@@ -4,24 +4,24 @@ name: meaile-user
 
 
 mysql:
-  host: 192.168.5.201
-  port: 3306
+  host: 127.0.0.1
+  port: 3307
   dbname: meaile
   username: root
-  password: root
+  password: 123456
 
 jwt:
   key: 'shenchangxingogogo'
 
 redis:
-  host: 192.168.5.201
+  host: 127.0.0.1
   port: 6379
   username: root
   password: 123456
   database: 0
 
 minio:
-  end-point: 192.168.5.201:9000
+  end-point: 127.0.0.1:9000
   access-key: s0Hel7tJJhBAxlXVLQ0W
   secret-key: 93qr8lWBPWGF0GGnoW8bRV4I7nBP7KAT59NVacdx
   bucket-name: meaile-server
