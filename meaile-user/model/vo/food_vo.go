@@ -15,7 +15,7 @@ type MeaileFoodVo struct {
 	CreatedTime  time.Time         `gorm:"column:CREATED_TIME" json:"createdTime"`  //type:*time.Time   comment:创建时间        version:2024-08-30 10:24
 	UpdatedBy    string            `gorm:"column:UPDATED_BY" json:"updatedBy"`      //type:string       comment:更新人          version:2024-08-30 10:24
 	UpdatedTime  time.Time         `gorm:"column:UPDATED_TIME" json:"updatedTime"`  //type:*time.Time   comment:更新时间        version:2024-08-30 10:24
-	Creator      model.MeaileUser  `gorm:"-" json:"creator"`
+	Creator      MeaileUserVo      `gorm:"-" json:"creator"`
 	TagList      []model.MeaileTag `gorm:"many2many:meaile_food_tag;joinForeignKey:food_id;joinReferences:tag_id;" json:"tagList"`
 	ImageOssObj  model.MeaileOss   `gorm:"-" json:"imageOssObj"`
 }
