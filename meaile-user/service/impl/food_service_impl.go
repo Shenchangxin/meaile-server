@@ -236,7 +236,7 @@ func (f *FoodServiceImpl) GetFoodList(ctx *gin.Context, query bo.FoodQuery) *mod
 		creators = append(creators, food.CreatedBy)
 	}
 	creatorsStr := strings.Join(creators, ", ")
-	var users []model.MeaileUser
+	var users []vo.MeaileUserVo
 	result = global.DB.Where("user_name in (?)", creatorsStr).Find(&users)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return &model.Response{
@@ -291,7 +291,7 @@ func (f *FoodServiceImpl) GetFollowFoodList(ctx *gin.Context, query bo.FoodQuery
 		creators = append(creators, food.CreatedBy)
 	}
 	//creatorsStr := strings.Join(creators, ", ")
-	var users []model.MeaileUser
+	var users []vo.MeaileUserVo
 	result = global.DB.Where("user_name in (?)", creators).Find(&users)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return &model.Response{
@@ -354,7 +354,7 @@ func (f *FoodServiceImpl) GetRecommendFoodList(ctx *gin.Context, query bo.FoodQu
 		creators = append(creators, food.CreatedBy)
 	}
 	//creatorsStr := strings.Join(creators, ", ")
-	var users []model.MeaileUser
+	var users []vo.MeaileUserVo
 	result = global.DB.Where("user_name in (?)", creators).Find(&users)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return &model.Response{
@@ -400,7 +400,7 @@ func (f *FoodServiceImpl) GetRecommendFoodList(ctx *gin.Context, query bo.FoodQu
 	}
 }
 func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Response {
-	var foodInfo model.MeaileFood
+	var foodInfo vo.MeaileFoodVo
 	result := global.DB.Where("id = ?", id).First(&foodInfo)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return &model.Response{
@@ -416,6 +416,16 @@ func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Respons
 			Data: nil,
 		}
 	}
+	var creator vo.MeaileUserVo
+	result = global.DB.Where("user_name = ?", foodInfo.CreatedBy).First(&creator)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	foodInfo.Creator = creator
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "查询成功",
