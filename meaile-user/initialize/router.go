@@ -25,6 +25,8 @@ func Routers() *gin.Engine {
 	router.InitFollowRouter(ApiGroup)
 	zap.S().Info("----配置Ai相关URL----")
 	router.InitAiRouter(ApiGroup)
+	zap.S().Info("----配置Comment相关URL----")
+	router.InitCommentRouter(ApiGroup)
 
 	return Router
 }

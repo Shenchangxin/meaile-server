@@ -426,6 +426,25 @@ func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Respons
 		}
 	}
 	foodInfo.Creator = creator
+	var contentMedia []model.MeaileOss
+	result = global.DB.Where("oss_id = ?", foodInfo.ContentMedia).Find(&contentMedia)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var mediaUrls []string
+	for _, oss := range contentMedia {
+		url, _ := global.MinioClient.GetPresignedGetObject(
+			global.ServerConfig.MinioConfig.BucketName,
+			oss.OssId+oss.Suffix,
+			24*time.Hour,
+		)
+		mediaUrls = append(mediaUrls, url)
+	}
+	foodInfo.MediaUrls = mediaUrls
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "查询成功",
