@@ -27,3 +27,7 @@ type MeaileUserVoList struct {
 	total int32
 	data  []*MeaileUserVo
 }
+
+func (MeaileUserVo) TableName() string {
+	return "meaile_user"
+}

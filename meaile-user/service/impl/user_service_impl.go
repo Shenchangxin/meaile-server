@@ -287,7 +287,7 @@ func (u *UserServiceImpl) GetUserInfo(ctx *gin.Context) *model.Response {
 			Data: result.Error.Error(),
 		}
 	}
-	fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, avatarOss.OssId+avatarOss.Suffix, 24*time.Hour)
+	fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + avatarOss.FileName
 	avatarOss.FileUrl = fileUrl
 	user.AvatarOssObj = avatarOss
 	return &model.Response{

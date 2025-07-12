@@ -26,5 +26,14 @@ minio:
   secret-key: 93qr8lWBPWGF0GGnoW8bRV4I7nBP7KAT59NVacdx
   bucket-name: meaile-server
 
+huawei-obs:
+  url-prefix: http://meaile.site/
+  end-point: obs.cn-north-4.myhuaweicloud.com
+  access-key: HPUAB5ZLL0MAM1KRJOIY
+  secret-key: hugVFJCzNzFu4Ygq0b0cyVb1wETfZzTJrLI2cm0Q
+  bucket-name: meaile-server
+  path: /meaile-server
+  expires: 360000
+
 ai:
   deepseek-key: ''

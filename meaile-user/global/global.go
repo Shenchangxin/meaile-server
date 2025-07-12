@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	DB           *gorm.DB
-	ServerConfig *config.ServerConfig = &config.ServerConfig{}
-	MinioClient  *utils.MinioClient
-	RedisClient  *utils.RedisClient
+	DB              *gorm.DB
+	ServerConfig    *config.ServerConfig = &config.ServerConfig{}
+	MinioClient     *utils.MinioClient
+	HuaWeiOBSClient *utils.HuaWeiOBSClient
+	RedisClient     *utils.RedisClient
 )

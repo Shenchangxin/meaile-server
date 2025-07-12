@@ -323,7 +323,7 @@ func (f *FoodServiceImpl) GetFollowFoodList(ctx *gin.Context, query bo.FoodQuery
 	for i, foodVo := range foods {
 		for _, oss := range ossList {
 			if oss.OssId == foodVo.Image {
-				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
 				oss.FileUrl = fileUrl
 				foods[i].ImageOssObj = oss
 				break
@@ -386,7 +386,7 @@ func (f *FoodServiceImpl) GetRecommendFoodList(ctx *gin.Context, query bo.FoodQu
 	for i, foodVo := range foods {
 		for _, oss := range ossList {
 			if oss.OssId == foodVo.Image {
-				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
 				oss.FileUrl = fileUrl
 				foods[i].ImageOssObj = oss
 				break
@@ -426,6 +426,21 @@ func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Respons
 		}
 	}
 	foodInfo.Creator = creator
+	var contentMedia []model.MeaileOss
+	result = global.DB.Where("oss_id = ?", foodInfo.ContentMedia).Find(&contentMedia)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	var mediaUrls []string
+	for _, oss := range contentMedia {
+		fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
+		mediaUrls = append(mediaUrls, fileUrl)
+	}
+	foodInfo.MediaUrls = mediaUrls
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "查询成功",

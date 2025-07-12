@@ -27,12 +27,22 @@ type MinioConfig struct {
 	SecretKey  string `mapstructure:"secret-key" json:"secret-key"`
 	BucketName string `mapstructure:"bucket-name" json:"bucket-name"`
 }
+type HuaWeiOBSConfig struct {
+	UrlPrefix  string `mapstructure:"url-prefix" json:"url-prefix"`
+	EndPoint   string `mapstructure:"end-point" json:"end-point"`
+	AccessKey  string `mapstructure:"access-key" json:"access-key"`
+	SecretKey  string `mapstructure:"secret-key" json:"secret-key"`
+	BucketName string `mapstructure:"bucket-name" json:"bucket-name"`
+	Path       string `mapstructure:"path" json:"path"`
+	Expires    int    `mapstructure:"expires" json:"expires"`
+}
 type ServerConfig struct {
-	Name        string      `mapstructure:"name" json:"name"`
-	Port        int32       `mapstructure:"port" json:"port"`
-	MysqlConfig MysqlConfig `mapstructure:"mysql" json:"mysql"`
-	JWTConfig   JWTConfig   `mapstructure:"jwt" json:"jwt"`
-	AiConfig    AiConfig    `mapstructure:"ai" json:"ai"`
-	RedisConfig RedisConfig `mapstructure:"redis" json:"redis"`
-	MinioConfig MinioConfig `mapstructure:"minio" json:"minio"`
+	Name            string          `mapstructure:"name" json:"name"`
+	Port            int32           `mapstructure:"port" json:"port"`
+	MysqlConfig     MysqlConfig     `mapstructure:"mysql" json:"mysql"`
+	JWTConfig       JWTConfig       `mapstructure:"jwt" json:"jwt"`
+	AiConfig        AiConfig        `mapstructure:"ai" json:"ai"`
+	RedisConfig     RedisConfig     `mapstructure:"redis" json:"redis"`
+	MinioConfig     MinioConfig     `mapstructure:"minio" json:"minio"`
+	HuaWeiOBSConfig HuaWeiOBSConfig `mapstructure:"huawei-obs" json:"huawei-obs"`
 }
