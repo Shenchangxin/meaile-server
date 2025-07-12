@@ -44,10 +44,35 @@ func (c *CommentServiceImpl) GetCommentList(ctx *gin.Context, query bo.CommentQu
 			Data: result.Error,
 		}
 	}
-	for _, comment := range comments {
+	var imageOssIds []string
+	for _, user := range users {
+		imageOssIds = append(imageOssIds, user.Avatar)
+	}
+	var ossList []model.MeaileOss
+	result = global.DB.Where("oss_id in (?)", imageOssIds).Find(&ossList)
+	if result.Error != nil {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询失败",
+			Data: result.Error,
+		}
+	}
+	for i, user := range users {
+		for _, oss := range ossList {
+			if oss.OssId == user.Avatar {
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
+				oss.FileUrl = fileUrl
+				users[i].AvatarOssObj = oss
+				break
+			}
+		}
+	}
+	for i, comment := range comments {
 		for _, user := range users {
 			if user.UserName == comment.CreatedBy {
-				comment.Creator = user
+				comments[i].AvatarUrl = user.AvatarOssObj.FileUrl
+				comments[i].UserName = user.UserName
+				comments[i].Creator = user
 			}
 		}
 	}

@@ -118,7 +118,7 @@ func (b *BookServiceImpl) GetBookListByTagId(ctx *gin.Context, bo bo.BookQueryBo
 	for i, bookVo := range bookList {
 		for _, oss := range ossList {
 			if oss.OssId == bookVo.Image {
-				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
 				oss.FileUrl = fileUrl
 				bookList[i].ImageOssObj = oss
 				break
@@ -168,7 +168,7 @@ func (b *BookServiceImpl) GetRecommendBookList(ctx *gin.Context, bo bo.BookQuery
 	for i, bookVo := range bookList {
 		for _, oss := range ossList {
 			if oss.OssId == bookVo.Image {
-				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
 				oss.FileUrl = fileUrl
 				bookList[i].ImageOssObj = oss
 				break
@@ -248,7 +248,7 @@ func (b *BookServiceImpl) GetMyBooks(ctx *gin.Context) *model.Response {
 	for i, bookVo := range myBooks {
 		for _, oss := range ossList {
 			if oss.OssId == bookVo.Image {
-				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
 				oss.FileUrl = fileUrl
 				myBooks[i].ImageOssObj = oss
 				break

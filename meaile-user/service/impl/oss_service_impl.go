@@ -51,7 +51,8 @@ func (o *OssServiceImpl) Upload(ctx *gin.Context, fileHeader *multipart.FileHead
 		}
 	}
 	objectName := uuidStr + "." + parts[len(parts)-1]
-	location, uploadErr := global.MinioClient.UploadFile(global.ServerConfig.MinioConfig.BucketName, objectName, fileHeader)
+	location, _, uploadErr := global.HuaWeiOBSClient.UploadFile(fileHeader, uuidStr, global.ServerConfig.HuaWeiOBSConfig.BucketName, objectName)
+	//location, uploadErr := global.MinioClient.UploadFile(global.ServerConfig.MinioConfig.BucketName, objectName, fileHeader)
 	if uploadErr != nil {
 		return &model.Response{
 			Code: model.FAILED,

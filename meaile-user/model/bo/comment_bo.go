@@ -22,7 +22,7 @@ func (MeaileCommentBo) TableName() string {
 }
 
 type CommentQuery struct {
-	PageSize int    `json:"pageSize"`
-	PageNum  int    `json:"pageNum"`
-	BizId    string `json:"bizId"`
+	PageSize int    `json:"pageSize" binding:"required"`
+	PageNum  int    `json:"pageNum" binding:"required"`
+	BizId    string `json:"bizId" binding:"required"`
 }

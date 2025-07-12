@@ -20,6 +20,7 @@ func main() {
 	initialize.InitDB()
 	initialize.InitRedis()
 	initialize.InitMinio()
+	initialize.InitHuaWeiOBSClient()
 
 	flag.Parse()
 	Routers := initialize.Routers()

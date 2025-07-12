@@ -14,6 +14,8 @@ type MeaileCommentVo struct {
 	UpdatedBy      string       `gorm:"column:UPDATED_BY" json:"updatedBy"`           //type:VARCHAR      comment:更新人                     version:2025-05-05 22:08
 	UpdatedTime    time.Time    `gorm:"column:UPDATED_TIME" json:"updatedTime"`       //type:*time.Time   comment:更新时间                   version:2025-05-05 22:08
 	Creator        MeaileUserVo `gorm:"-" json:"creator"`
+	AvatarUrl      string       `gorm:"-" json:"avatarUrl"`
+	UserName       string       `gorm:"-" json:"userName"`
 }
 
 // TableName 表名:meaile_comment，评论表。

@@ -323,7 +323,7 @@ func (f *FoodServiceImpl) GetFollowFoodList(ctx *gin.Context, query bo.FoodQuery
 	for i, foodVo := range foods {
 		for _, oss := range ossList {
 			if oss.OssId == foodVo.Image {
-				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
 				oss.FileUrl = fileUrl
 				foods[i].ImageOssObj = oss
 				break
@@ -386,7 +386,7 @@ func (f *FoodServiceImpl) GetRecommendFoodList(ctx *gin.Context, query bo.FoodQu
 	for i, foodVo := range foods {
 		for _, oss := range ossList {
 			if oss.OssId == foodVo.Image {
-				fileUrl, _ := global.MinioClient.GetPresignedGetObject(global.ServerConfig.MinioConfig.BucketName, oss.OssId+oss.Suffix, 24*time.Hour)
+				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
 				oss.FileUrl = fileUrl
 				foods[i].ImageOssObj = oss
 				break
@@ -437,12 +437,8 @@ func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Respons
 	}
 	var mediaUrls []string
 	for _, oss := range contentMedia {
-		url, _ := global.MinioClient.GetPresignedGetObject(
-			global.ServerConfig.MinioConfig.BucketName,
-			oss.OssId+oss.Suffix,
-			24*time.Hour,
-		)
-		mediaUrls = append(mediaUrls, url)
+		fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
+		mediaUrls = append(mediaUrls, fileUrl)
 	}
 	foodInfo.MediaUrls = mediaUrls
 	return &model.Response{
