@@ -4,7 +4,7 @@ package model
 import "time"
 
 type MeaileUserFollow struct {
-	Id             int64     `gorm:"column:primaryKey;id" json:"id"`                //type:BIGINT       comment:主键id          version:2025-04-10 14:28
+	Id             int64     `gorm:"column:id" json:"id"`                           //type:BIGINT       comment:主键id          version:2025-04-10 14:28
 	UserName       string    `gorm:"column:user_name" json:"userName"`              //type:string       comment:用户名          version:2025-04-10 14:28
 	FollowUserName string    `gorm:"column:follow_user_name" json:"followUserName"` //type:string       comment:关注的用户名    version:2025-04-10 14:28
 	FollowTime     time.Time `gorm:"column:follow_time" json:"followTime"`          //type:*time.Time   comment:关注时间        version:2025-04-10 14:28

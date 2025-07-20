@@ -1,7 +1,9 @@
 package impl
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"meaile-server/meaile-user/global"
 	"meaile-server/meaile-user/model"
 	bo "meaile-server/meaile-user/model/bo"
@@ -14,6 +16,14 @@ type FollowServiceImpl struct {
 func (f *FollowServiceImpl) FollowUser(ctx *gin.Context, followBo bo.MeaileUserFollowBo) *model.Response {
 	claims, _ := ctx.Get("claims")
 	customClaims := claims.(*model.CustomClaims)
+	result := global.DB.Where("user_name = ? and follow_user_name = ?", customClaims.UserName, followBo.FollowUserName).First(&followBo)
+	if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.SUCCESS,
+			Msg:  "关注成功",
+			Data: nil,
+		}
+	}
 	follow := model.MeaileUserFollow{
 		UserName:       customClaims.UserName,
 		FollowUserName: followBo.FollowUserName,
@@ -23,7 +33,7 @@ func (f *FollowServiceImpl) FollowUser(ctx *gin.Context, followBo bo.MeaileUserF
 		UpdatedBy:      customClaims.UserName,
 		UpdatedTime:    time.Now(),
 	}
-	result := global.DB.Create(&follow)
+	result = global.DB.Create(&follow)
 	if result.Error != nil {
 		return &model.Response{
 			Code: model.FAILED,
@@ -36,6 +46,4 @@ func (f *FollowServiceImpl) FollowUser(ctx *gin.Context, followBo bo.MeaileUserF
 		Msg:  "关注成功",
 		Data: follow,
 	}
-
-	return nil
 }
