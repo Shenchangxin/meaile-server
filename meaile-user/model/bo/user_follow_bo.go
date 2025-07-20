@@ -13,3 +13,7 @@ type MeaileUserFollowBo struct {
 	UpdatedBy      string    `gorm:"column:UPDATED_BY" json:"updatedBy"`            //type:string       comment:更新人          version:2025-04-10 14:28
 	UpdatedTime    time.Time `gorm:"column:UPDATED_TIME" json:"updatedTime"`        //type:*time.Time   comment:更新时间        version:2025-04-10 14:28
 }
+
+func (MeaileUserFollowBo) TableName() string {
+	return "meaile_user_follow"
+}

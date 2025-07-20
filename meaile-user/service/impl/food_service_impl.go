@@ -421,10 +421,22 @@ func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Respons
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return &model.Response{
 			Code: model.FAILED,
-			Msg:  "查询失败",
+			Msg:  "查询作者信息失败",
 			Data: result.Error,
 		}
 	}
+	var avatarOss model.MeaileOss
+	result = global.DB.Where("oss_id = ?", creator.Avatar).First(&avatarOss)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return &model.Response{
+			Code: model.FAILED,
+			Msg:  "查询作者头像信息失败",
+			Data: result.Error,
+		}
+	}
+	fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + avatarOss.FileName
+	foodInfo.UserAvatarUrl = fileUrl
+	foodInfo.UserName = creator.UserName
 	foodInfo.Creator = creator
 	var contentMedia []model.MeaileOss
 	result = global.DB.Where("oss_id = ?", foodInfo.ContentMedia).Find(&contentMedia)

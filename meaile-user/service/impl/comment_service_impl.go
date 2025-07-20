@@ -9,7 +9,6 @@ import (
 	bo "meaile-server/meaile-user/model/bo"
 	vo "meaile-server/meaile-user/model/vo"
 	"net/http"
-	"strings"
 )
 
 type CommentServiceImpl struct {
@@ -30,13 +29,12 @@ func (c *CommentServiceImpl) GetCommentList(ctx *gin.Context, query bo.CommentQu
 			Data: result.Error,
 		}
 	}
-	var creators []string
+	var creatorsIds []int64
 	for _, comment := range comments {
-		creators = append(creators, comment.CreatedBy)
+		creatorsIds = append(creatorsIds, comment.UserId)
 	}
-	creatorsStr := strings.Join(creators, ", ")
 	var users []vo.MeaileUserVo
-	result = global.DB.Where("user_name in (?)", creatorsStr).Find(&users)
+	result = global.DB.Where("id in (?)", creatorsIds).Find(&users)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return &model.Response{
 			Code: model.FAILED,
@@ -61,16 +59,15 @@ func (c *CommentServiceImpl) GetCommentList(ctx *gin.Context, query bo.CommentQu
 		for _, oss := range ossList {
 			if oss.OssId == user.Avatar {
 				fileUrl := global.ServerConfig.HuaWeiOBSConfig.UrlPrefix + oss.FileName
-				oss.FileUrl = fileUrl
-				users[i].AvatarOssObj = oss
+				users[i].AvatarUrl = fileUrl
 				break
 			}
 		}
 	}
 	for i, comment := range comments {
 		for _, user := range users {
-			if user.UserName == comment.CreatedBy {
-				comments[i].AvatarUrl = user.AvatarOssObj.FileUrl
+			if user.Id == comment.UserId {
+				comments[i].AvatarUrl = user.AvatarUrl
 				comments[i].UserName = user.UserName
 				comments[i].Creator = user
 			}

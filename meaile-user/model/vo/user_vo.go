@@ -12,6 +12,7 @@ type MeaileUserVo struct {
 	Password        string          `gorm:"column:password" json:"password"`                //type:string       comment:密码              version:2024-08-01 15:52
 	Status          string          `gorm:"column:status" json:"status"`                    //type:string       comment:状态              version:2024-08-01 15:52
 	Avatar          string          `gorm:"column:avatar" json:"avatar"`                    //type:string       comment:头像              version:2024-08-01 15:52
+	AvatarUrl       string          `gorm:"-" json:"avatarUrl"`                             //type:string       comment:头像              version:2024-08-01 15:52
 	BackgroundImage string          `gorm:"column:background_image" json:"backgroundImage"` //type:string       comment:背景图            version:2024-08-01 15:52
 	Profile         string          `gorm:"column:profile" json:"profile"`                  //type:string       comment:个人简介          version:2024-08-01 15:52
 	Sex             string          `gorm:"column:sex" json:"sex"`                          //type:string       comment:性别（0女1男）    version:2024-08-01 15:52
