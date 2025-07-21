@@ -47,3 +47,24 @@ func (f *FollowServiceImpl) FollowUser(ctx *gin.Context, followBo bo.MeaileUserF
 		Data: follow,
 	}
 }
+
+func (f *FollowServiceImpl) UnfollowUser(ctx *gin.Context, followBo bo.MeaileUserFollowBo) *model.Response {
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
+	result := global.DB.Where("user_name = ? and follow_user_name = ?", customClaims.UserName, followBo.FollowUserName).First(&followBo)
+	if result.RowsAffected == 1 {
+		result = global.DB.Where("id = ?", followBo.Id).Delete(&followBo)
+		if result.Error != nil {
+			return &model.Response{
+				Code: model.SUCCESS,
+				Msg:  "取关成功",
+				Data: followBo,
+			}
+		}
+	}
+	return &model.Response{
+		Code: model.SUCCESS,
+		Msg:  "取关成功",
+		Data: nil,
+	}
+}

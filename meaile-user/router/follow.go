@@ -9,5 +9,6 @@ import (
 func InitFollowRouter(Router *gin.RouterGroup) {
 	FoodRouter := Router.Group("follow")
 	FoodRouter.POST("followUser", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.FollowUser)
+	FoodRouter.POST("unfollowUser", middlewares.JWTAuth(), middlewares.LogMiddleware(), controller.UnfollowUser)
 
 }

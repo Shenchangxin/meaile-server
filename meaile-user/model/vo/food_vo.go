@@ -22,6 +22,7 @@ type MeaileFoodVo struct {
 	MediaUrls     []string          `gorm:"-" json:"mediaUrls"`
 	UserAvatarUrl string            `gorm:"-" json:"userAvatarUrl"`
 	UserName      string            `gorm:"-" json:"userName"`
+	IsFollowing   bool              `gorm:"-" json:"isFollowing"`
 }
 
 func (MeaileFoodVo) TableName() string {

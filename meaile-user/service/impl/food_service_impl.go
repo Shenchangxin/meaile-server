@@ -453,6 +453,15 @@ func (f *FoodServiceImpl) GetFoodInfo(ctx *gin.Context, id int64) *model.Respons
 		mediaUrls = append(mediaUrls, fileUrl)
 	}
 	foodInfo.MediaUrls = mediaUrls
+	claims, _ := ctx.Get("claims")
+	customClaims := claims.(*model.CustomClaims)
+	var follow = model.MeaileUserFollow{}
+	result = global.DB.Where("user_name = ? and follow_user_name = ?", customClaims.UserName, foodInfo.UserName).First(&follow)
+	if result.RowsAffected == 1 {
+		foodInfo.IsFollowing = true
+	} else {
+		foodInfo.IsFollowing = false
+	}
 	return &model.Response{
 		Code: model.SUCCESS,
 		Msg:  "查询成功",
